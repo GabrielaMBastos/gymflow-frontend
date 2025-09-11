@@ -1,0 +1,203 @@
+
+.login-body{
+    height: 100vh;
+    align-content: center;
+    background-image: url(/assets/bg.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-sizing: border-box;
+}
+
+.login-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.login-container-left{
+    padding-right: 3em;
+    text-align: center;
+}
+
+.img-logo{
+    width: 30em;
+    margin-bottom: 1em;
+}
+
+.login-container-left p{
+    width: 20em;
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 35px;
+    color: #616161;
+    padding-right: 1em;
+    }
+
+.login-container-right{
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 3em 3em;
+    box-shadow: 4px 5px 15px #010113;
+}
+
+.login-container-right h2{
+    font-family: "Archivo Black", sans-serif;
+    font-size: 50px;
+    color: #1565C0;
+}
+
+.login-container-right p{
+    font-size: 18px;
+    color: #616161;
+    margin-bottom: 2em;
+}
+
+.form-info{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.form-infos input{
+    padding: 1.5em;
+    border-radius: 5px;
+    border: #616161 solid 1px;
+    margin-bottom: 2em;
+}
+
+.form-infos label{
+    color: #616161;
+}
+
+.form-infos input::placeholder{
+    color: #616161;
+    font-size: 16px;
+    font-family: "Montserrat", sans-serif;
+}
+
+.btn-login{
+    padding: 1em;
+    width: 100%;
+    background-color: #00C853;
+    border-radius: 5px;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: "Montserrat", sans-serif;
+    margin-top: 1.5em;
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+.btn-login:hover{
+    opacity: 1;
+}
+
+.cadastro{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    margin-top: 1em;
+    text-align: center;
+}
+
+.cadastro a{
+    cursor: pointer;
+    text-decoration: none;
+    color: #000000;
+}
+
+/* responsividade*/
+
+@media screen and (orientation: portrait) {
+.login-body {
+    background-image: url(/assets/bg.PNG); /* Portrait-specific image */
+    background-size: cover; /* Ensures the entire image is visible */
+    background-position: 50%; /* Centers the image */
+}
+}
+
+@media (max-width: 1200px){  
+
+.login-container-left p{
+    font-size: 24px; 
+}
+
+.login-container-right h2{
+    font-size: 40px;
+}
+}
+
+@media (max-width: 992px){}
+@media (max-width: 768px){}
+
+
+/*@media (max-width: 1100px){
+
+.img-logo{
+    width: 25em;
+}
+
+.login-container-left p{
+    font-size: 20px; 
+}
+
+.login-container-right h2{
+    font-size: 35px;
+}
+}
+
+@media (max-width: 900px){
+
+.login-body{
+    background-position: 50%;
+}   
+
+.login-container-left{
+    padding-right: 2em;
+}
+
+.img-logo{
+    width: 20em;
+}
+
+.login-container-left p{
+    font-size: 16px;
+}
+
+.login-container-right h2{
+    font-size: 32px;
+}
+
+}*/
+
+@media (max-width: 576px){
+
+.login-body{
+    background-image: url(/assets/bg-portrait.PNG);
+}
+
+.login-container{
+    flex-direction: column;
+    height: auto;
+}
+
+.img-logo{
+    width: 10em;
+}
+
+.login-container-left{
+    padding: 0;
+}
+
+.login-container-left p{
+    display: none;
+}
+
+.login-container-right{
+    padding: 2em 2em;
+}
+}
+

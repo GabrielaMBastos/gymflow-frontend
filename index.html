@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>GymFlow</title>
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-container-left">
+            <img class="img-logo" src="assets/GYMFLOW-logo.png">
+            <p>Organize seus treinos, acompanhe estatísticas e evolua todos os dia</p>
+        </div>
+        <div class="login-container-right">
+            <h2>Bem-vindo de volta!</h2>
+            <p>Entre para acessar seus treinos</p>
+            <form id="login-form">
+                <div class="form-infos">
+                    <div class="form-info">
+                        <label for="email">Email:</label>
+                        <input type="email" name="email" id="email" class="block" placeholder="Insira seu email" minlength="1" maxlength="30">
+                    </div>
+                    <div class="form-info">
+                        <label for="password">Senha:</label>
+                        <input type="password" name="password" id="password" class="block" placeholder="Insira sua senha" minlength="1" maxlength="20">
+                    </div>                     
+                </div>
+                <input class="btn-login" type="submit" value="LOGIN">
+            </form>
+            <div class="cadastro">
+                <p>Não tem uma conta?</p>
+                <a href="#">Cadastre-se</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/js/login.js"></script>
+</body>
+
+</html>

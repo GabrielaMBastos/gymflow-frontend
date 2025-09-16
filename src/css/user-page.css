@@ -1,5 +1,5 @@
 body{
-    background-image: url(/assets/bg.png);
+    background-image: url(/src/assets/bg.png);
     background-size: cover;
 }
 
@@ -56,6 +56,7 @@ main{
     font-family: "Archivo Black", sans-serif;
     letter-spacing: 2px;
     font-size: 35px;
+    color: #1565C0 ;
 }
 
 .infos-container{

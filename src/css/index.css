@@ -1,8 +1,7 @@
-
 .login-body{
     height: 100vh;
     align-content: center;
-    background-image: url(/assets/bg.png);
+    background-image: url(/src/assets/bg.png);
     background-repeat: no-repeat;
     background-size: cover;
     box-sizing: border-box;
@@ -12,7 +11,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
 }
 
 .login-container-left{
@@ -32,7 +30,7 @@
     line-height: 35px;
     color: #616161;
     padding-right: 1em;
-    }
+}
 
 .login-container-right{
     background-color: #fff;
@@ -50,20 +48,19 @@
 .login-container-right p{
     font-size: 18px;
     color: #616161;
-    margin-bottom: 2em;
 }
 
 .form-info{
     display: flex;
     flex-direction: column;
     gap: 0.5em;
+    margin-top: 2em;
 }
 
 .form-infos input{
     padding: 1.5em;
     border-radius: 5px;
     border: #616161 solid 1px;
-    margin-bottom: 2em;
 }
 
 .form-infos label{
@@ -86,7 +83,7 @@
     font-size: 18px;
     font-weight: 600;
     font-family: "Montserrat", sans-serif;
-    margin-top: 1.5em;
+    margin-top: 2.5em;
     cursor: pointer;
     opacity: 0.9;
 }
@@ -109,95 +106,100 @@
     color: #000000;
 }
 
-/* responsividade*/
-
-@media screen and (orientation: portrait) {
-.login-body {
-    background-image: url(/assets/bg.PNG); /* Portrait-specific image */
-    background-size: cover; /* Ensures the entire image is visible */
-    background-position: 50%; /* Centers the image */
-}
-}
-
+/* Responsividade de fontes */
 @media (max-width: 1200px){  
-
-.login-container-left p{
-    font-size: 24px; 
+    .login-container-left p{
+        font-size: 24px; 
+    }
+    .login-container-right h2{
+        font-size: 40px;
+    }
 }
 
-.login-container-right h2{
-    font-size: 40px;
-}
-}
-
-@media (max-width: 992px){}
-@media (max-width: 768px){}
-
-
-/*@media (max-width: 1100px){
-
-.img-logo{
-    width: 25em;
+@media (max-width: 992px){
+    .img-logo{
+        width: 20em;
+    }
+    .login-container-left p{
+        font-size: 16px;
+    }
+    .login-container-right h2{
+        font-size: 35px;
+    }
 }
 
-.login-container-left p{
-    font-size: 20px; 
+@media (max-width: 480px){
+    .login-container-right h2{
+        font-size: 28px;
+    }
+
+    .login-container-right p{
+        font-size: 14px;
+    }
 }
 
-.login-container-right h2{
-    font-size: 35px;
-}
-}
+/* Landscape pequenos aparelhos */
+@media (max-width: 812px) and (orientation: landscape) {
+    .login-body{
+        height: auto;
+        background-image: url(/src/assets/bg-portrait.PNG);
+        background-position: 50%;
+    }
 
-@media (max-width: 900px){
+    .login-container {
+        flex-direction: column;
+        align-items: center;
+        margin: 3em;
+    }
 
-.login-body{
-    background-position: 50%;
-}   
+    .login-container-left {
+        padding-right: 0;
+        margin-bottom: 1.5em;
+    }
 
-.login-container-left{
-    padding-right: 2em;
-}
+    .img-logo {
+        width: 12em;
+    }
 
-.img-logo{
-    width: 20em;
-}
+    .login-container-left p {
+        display: none;
+    }
 
-.login-container-left p{
-    font-size: 16px;
-}
-
-.login-container-right h2{
-    font-size: 32px;
-}
-
-}*/
-
-@media (max-width: 576px){
-
-.login-body{
-    background-image: url(/assets/bg-portrait.PNG);
+    .login-container-right {
+        padding: 2em;
+    }
 }
 
-.login-container{
-    flex-direction: column;
-    height: auto;
-}
+/* Portrait mode todos */
+@media (orientation: portrait) {
+    .login-body{
+        background-image: url(/src/assets/bg-portrait.PNG);
+        background-size: cover;
+        background-position: 50%;
+    }
+    
+    .login-container {
+        flex-direction: column;
+        align-items: center;
+        margin: 3em;
+    }
 
-.img-logo{
-    width: 10em;
-}
+    .login-container-left {
+        margin-bottom: 2em;
+        padding-right: 0; 
+        text-align: center;
+    }
 
-.login-container-left{
-    padding: 0;
-}
+    .img-logo {
+        width: 12em;
+    }
 
-.login-container-left p{
-    display: none;
-}
+    .login-container-left p {
+        display: none;   
+    }
 
-.login-container-right{
-    padding: 2em 2em;
+    .login-container-right {
+        padding: 2em;
+        width: 90%;
+    }
 }
-}
-

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymFlow Login</title>
     <link rel="stylesheet" href="/src/css/styles.css">
-    <link rel="stylesheet" href="/src/css/index.css">
+    <link rel="stylesheet" href="/src/css/cadastro.css">
     <link
     rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -20,9 +20,13 @@
             <p>Organize seus treinos, acompanhe estatísticas e evolua todos os dias</p>
         </div>
         <div class="login-container-right">
-            <h2>Bem-vindo de volta!</h2>
+            <h2>Faça o seu cadastro!</h2>
             <p>Entre para acessar seus treinos</p>
-            <form id="login-form" onsubmit="login(event)">
+            <form id="login-form" onsubmit="cadastro(event)">
+                <div class="form-info">
+                    <label for="email">Nome:</label>
+                    <input type="text" id="nome" placeholder="Insira seu nome">
+                </div>
                 <div class="form-info">
                     <label for="email">Email:</label>
                     <input type="text" id="email" placeholder="Insira seu email">
@@ -34,14 +38,11 @@
                         <i class="fa-regular fa-eye" onclick="viewSenha()" ></i>
                     </div>
                 </div>
-                <button type="button" class="link-senha" onclick="abrirPopup('popupSenha')">
-                    Esqueceu a senha?
-                </button>
-                <input class="btn-login" type="submit" value="LOGIN">
+                <input class="btn-cadastro" type="submit" value="CADASTRE-SE">
             </form>
-            <div class="cadastro">
-                <p>Não tem uma conta?</p>
-                <a href="/src/paginas/cadastro.html">Cadastre-se</a>
+            <div class="login">
+                <p>Já tem uma conta?</p>
+                <a href="/src/index.html">Entre</a>
             </div>
         </div>
     </div>
@@ -54,22 +55,6 @@
         </div>
     </div>
 
-    <!-- Popup redefinir senha -->
-    <div id="popupSenha" class="popup">
-        <div class="popup-conteudo">
-            <h3>Redefinir Senha</h3>
-            <form id="formRedefinirSenha" onsubmit="redefinirSenha(event)">
-                <input type="text" id="resetNome" placeholder="Seu nome cadastrado">
-                <input type="text" id="resetEmail" placeholder="Seu email cadastrado">
-                <input type="password" id="novaSenha" placeholder="Digite a nova senha">
-                <div>
-                <button type="submit">Redefinir</button>
-                <button type="button" onclick="fecharPopupSenha()">Cancelar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script src="/src/js/login.js"></script>
+    <script src="/src/js/cadastro.js"></script>
 </body>
 </html>

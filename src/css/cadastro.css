@@ -94,31 +94,12 @@ body {
     padding-right: 1em;
 }
 
-#email, #senha{
+#nome, #email, #senha{
     font-size: 16px;
     color: #616161;
 }
 
-
-
-/* ESQUECEU SENHA  */
-.link-senha {
-    background: none;
-    border: none;
-    color: #1565C0;
-    text-decoration: none;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 0.5em;
-    padding: 0;
-}
-
-.link-senha:hover {
-    color: #0d47a1;
-}
-/**/
-
-.btn-login {
+.btn-cadastro {
     padding: 1em;
     width: 100%;
     background-color: #00C853;
@@ -132,11 +113,11 @@ body {
     opacity: 0.9;
 }
 
-.btn-login:hover {
+.btn-cadastro:hover {
     opacity: 1;
 }
 
-.cadastro {
+.login {
     display: flex;
     flex-direction: row;
     gap: 0.5em;
@@ -144,7 +125,7 @@ body {
     text-align: center;
 }
 
-.cadastro a {
+.login a {
     cursor: pointer;
     text-decoration: none;
     color: #000;
@@ -173,23 +154,10 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
-.popup-conteudo h3,
 .popup-conteudo p {
     margin-bottom: 1em;
 }
 
-.popup-conteudo input {
-    padding: 0.8em;
-    border-radius: 5px;
-    border: 1px solid #616161;
-    font-size: 14px;
-}
-
-.popup-conteudo form{
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-}
 
 .popup-conteudo button {
     padding: 0.8em;
@@ -205,12 +173,8 @@ body {
     background: #aaa;
 }
 
-#popupSenha {
-  z-index: 10;
-}
-
 #popupErro {
-  z-index: 20;
+  z-index: 10;
 }
 
 /* Responsividade*/

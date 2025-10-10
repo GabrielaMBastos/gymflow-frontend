@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/src/css/styles.css" />
+  <link rel="stylesheet" href="/src/css/pagina-user.css" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet"
+  />
+  <title>GymFlow - Perfil do Usuário</title>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img class="logo-img" src="/src/assets/gymflow-logo-img.PNG" />
+      <img class="logo-text" src="/src/assets/gymflow-logo-texto.PNG" />
+    </div>
+    <nav class="nav">
+      <a href="#">Início</a>
+      <a href="#">Estatísticas</a>
+      <a href="/src/paginas/pagina-user.html">Meu perfil</a>
+    </nav>
+
+    <!-- Nav lateral-->
+    <nav id="navSide" class="nav-side">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <a href="#">Início</a>
+      <a href="#">Estatísticas</a>
+      <a href="/src/paginas/user-page.html">Meu perfil</a>
+    </nav>
+    <span class="nav-side-icon" onclick="openNav()"><i class="fa-solid fa-bars"></i></span>
+  </header>
+
+
+  <main>
+    <div class="main-container">
+      <h1>Perfil do Usuário</h1>
+
+      <div class="infos-container">
+        <div class="left-side">
+          <h2>Dados Pessoais</h2>
+          <div class="left-section1">
+            <div class="info">
+              <label for="name">Nome:</label>
+              <input type="text" id="name" class="block" readonly />
+            </div>
+            <div class="info">
+              <label for="email">Email:</label>
+              <input type="email" id="email" class="block" readonly />
+            </div>
+            <div class="info">
+              <label for="senha">Senha:</label>
+              <div class="senha">
+                <input type="password" id="senha" class="block" readonly  />
+                <i class="fa-regular fa-eye" onclick="viewSenha()" ></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="left-section2">
+            <div class="info">
+              <input id="idadeValor" type="number" readonly>
+              <p class="info-texto">Idade</p>
+            </div>
+            <div class="info">
+              <input id="alturaValor" type="number" readonly>
+              <p class="info-texto">Altura (cm)</p>
+            </div>
+            <div class="info">
+              <input id="pesoValor" type="number" readonly>
+              <p class="info-texto">Peso (kg)</p>
+            </div>
+            <div class="info">
+              <div class="imc">
+                <input id="imcValor" type="number" readonly>
+                <input id="imcClassificacao" type="text" readonly>
+              </div>
+              <p class="info-texto">IMC</p>
+            </div>
+          </div>
+
+          <div class="left-btns">
+            <button class="edit-btn" onclick="editar()">
+              <i class="fa-solid fa-pencil"></i>Editar
+            </button>
+            <button class="save-btn" onclick="salvar()">Salvar</button>
+          </div>
+        </div>
+
+        <div class="right-side">
+          <div class="right-section1">
+            <h2>Metas e Objetivos</h2>
+            <div class="add-meta">
+              <input type="text" id="novaMeta" placeholder="Digite uma nova meta" />
+              <button id="adicionarMeta">+</button>
+            </div>
+            <div id="listaMetas"></div>
+          </div>
+
+          <button class="btn-sair" onclick="sair()">Sair</button>
+        </div>
+      </div>
+
+      <!-- Popup Erro -->
+      <div id="popupErro" class="popup">
+        <div class="popup-conteudo">
+          <p id="popupMensagem"></p>
+          <button onclick="fecharPopup()">OK</button>
+        </div>
+      </div>
+
+      <!-- Popup Sucesso -->
+      <div id="popupSucesso" class="popup">
+        <div class="popup-conteudo">
+          <p id="popupMensagemSucesso"></p>
+          <button onclick="fecharPopupSucesso()">OK</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="/src/js/pagina-user.js"></script>
+</body>
+</html>

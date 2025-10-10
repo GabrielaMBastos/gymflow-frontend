@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Menu principal</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="sripts.js" defer></script>
+</head>
+<header>
+    <div class="cabecalho">
+        <div class="conteudo-cabecalho">Início</div>
+        <div class="conteudo-cabecalho">Meus treinos</div>
+        <div class="conteudo-cabecalho">Meu perfil</div>
+        <div class="conteudo-cabecalho">Estatísticas</div>
+</header>
+
+<body>
+    <div class="logo">
+        <div>
+            <div class="organize-treinos">Organize seus treinos,</div>
+            <h4>acompanhe sua evolução diariamente!</h4>
+        </div>
+        <br>
+        <div></div> <button class="topo">Mostre Minha Evolução</button>
+        <br>
+        <button class="topo">Melhore seu desempenho</button>
+        <br>
+        <button class="topo">Cadastre suas informações</button>
+        <br>
+    </div>
+    <img src="logo.png" width="500">
+    </div>
+
+    <div class="quadro-de-imagens">
+
+        <div class="titulo-carrosel">
+            <h2>Eleve seus treinos para outro nível<br>
+                com organização e praticidade</h2>
+
+            <h1>Não apenas mais um aplicativo para guardar suas informações <br>
+                Transforme-as em resultado e praticidade npara a vida</h1>
+            <br>
+            <br>
+            <br>
+            <button class="topo">Saiba mais</button>
+        </div>
+        <div class="carrosel">
+
+            <div class="slides">
+                <div class="slide"><img src="academia1.jpg" alt="Imagem 1"></div>
+                <div class="slide"><img src="academia2.jpg" alt="Imagem 2"></div>
+                <div class="slide"><img src="academia3.jpg" alt="Imagem 13"></div>
+            </div>
+            <div class="indicators">
+                <span class="active"></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="criar-e-editar-ficha">
+        <div class="organize-treinos">Crie sua ficha</div>
+        <div>
+            <h4>da forma que quiser</h4>
+        </div>
+        <div>
+            <button class="invisivel" id="openModalBtn"></button>
+
+            <div class="modal" id="textModal">
+
+                <div class="modal-content">
+                    <span class="close" id="closeModal">&times;</span>
+
+                    <div id="treinos"></div>
+
+                    <button class="add-treino-btn" onclick="criarTreino()">+ Criar Novo Treino</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="separacao-fichas">
+
+        <div class="treinos">
+            <div class="fichas" id="treino1"></div>
+            <div id="listaTreinos1"></div>
+        </div>
+
+        <div class="treinos">
+            <div class="fichas" id="treino2"></div>
+            <div id="listaTreinos2"></div>
+        </div>
+
+        <div class="treinos">
+            <div class="fichas" id="treino3"></div>
+            <div id="listaTreinos3"></div>
+        </div>
+    </div>
+    <div class="ocultar">
+        <div class="ocultar-treinos"><button class="botao-ficha" onclick="toggleTreinos('treino1')">Ocultar ou mostrar
+                treino</button></div>
+        <div class="ocultar-treinos"><button class="botao-ficha" onclick="toggleTreinos('treino2')">Ocultar ou mostrar
+                treino</button></div>
+        <div class="ocultar-treinos"><button class="botao-ficha" onclick="toggleTreinos('treino3')">Ocultar ou mostrar
+                treino</button></div>
+    </div>
+
+</body>

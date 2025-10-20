@@ -14,14 +14,9 @@ async function login(event) {
         return;
     }
 
-    if (!senha || senha.length < 4) {
-    mostrarPopup("A senha deve ter pelo menos 4 caracteres.");
-    return;
-    }
-
     try {
         // enviar dados para backend
-        const res = await fetch("http://localhost:8080/api/login", {
+        const res = await fetch("http://localhost:8080/api/----", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, senha })
@@ -33,7 +28,7 @@ async function login(event) {
         }
 
         const data = await res.json();
-        localStorage.setItem("token", data.token); // salvar jwt
+        localStorage.setItem("token", data.token); // salvar jwt no navegador
 
     } catch (err) {
         mostrarPopup("Erro de conexão com o servidor!");
@@ -67,7 +62,7 @@ async function redefinirSenha(event) {
 
     try {
         // envia os dados para o backend
-        const res = await fetch("http://localhost:8080/api/auth/reset-password", {
+        const res = await fetch("http://localhost:8080/api/----", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nome, email, novaSenha })

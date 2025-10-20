@@ -23,7 +23,7 @@ async function cadastro(event) {
 
     // tenta contato com o back
     try {
-        const res = await fetch("http://localhost:8080/api/cadastro", {
+        const res = await fetch("http://localhost:8080/api/----", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nome, email, senha })
@@ -45,6 +45,7 @@ async function cadastro(event) {
         // cadastro bem-sucedido
         const data = await res.json();
         mostrarPopup("Cadastro realizado com sucesso!");
+        console.log("Usuário criado:", data);
 
     } catch (err) {
         mostrarPopup("Erro de conexão com o servidor!");
@@ -59,7 +60,7 @@ function validarEmail(email) {
 // popup
 function mostrarPopup(msg) {
     document.getElementById("popupMensagem").innerHTML = msg;
-    document.getElementById("popupErro").style.display = "block";
+    document.getElementById("popupErro").style.display = "flex";
 }
 
 function fecharPopup() {

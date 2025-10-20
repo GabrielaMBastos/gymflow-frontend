@@ -1,4 +1,4 @@
-/*
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
@@ -11,66 +11,82 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// configuração base da api
-const API_BASE_URL = "http://localhost:8080/api";
-const USER_ID = 1; // trocar depois para JWT
+// pegar token user nav
+function getToken() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "/src/index.html"; 
+    throw new Error("Usuário não autenticado.");
+  }
+  return token;
+}
 
 
 // requisições - usuário
 async function carregarUsuarioAPI() {
-  const response = await fetch(`${API_BASE_URL}/usuarios/${USER_ID}`);
-  if (!response.ok) throw new Error("Falha ao obter usuário");
-  return await response.json();
+  const res = await fetch("http://localhost:8080/api/----/---", {
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+  if (!res.ok) throw new Error("Falha ao obter usuário");
+  return await res.json();
 }
 
 async function salvarUsuarioAPI(usuario) {
-  const response = await fetch(`${API_BASE_URL}/usuarios/${USER_ID}`, {
+  const res = await fetch("http://localhost:8080/api/----/----", {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`
+    },
     body: JSON.stringify(usuario)
   });
-
-  if (!response.ok) throw new Error("Falha ao salvar usuário");
-  return await response.json();
+  if (!res.ok) throw new Error("Falha ao salvar usuário");
+  return await res.json();
 }
 
 
 // requisições - metas
 async function carregarMetasAPI() {
-  const response = await fetch(`${API_BASE_URL}/usuarios/${USER_ID}/metas`);
-  if (!response.ok) throw new Error("Falha ao carregar metas");
+  const res = await fetch("http://localhost:8080/api/---", {
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+  if (!res.ok) throw new Error("Falha ao carregar metas");
 
-  const metas = await response.json();
+  const metas = await res.json();
   metas.forEach(meta => criarItemMeta(meta.texto, meta.concluida, meta.id));
 }
 
 async function criarMetaAPI(texto) {
-  const response = await fetch(`${API_BASE_URL}/usuarios/${USER_ID}/metas`, {
+  const res = await fetch("http://localhost:8080/api/---", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`
+    },
     body: JSON.stringify({ texto, concluida: false })
   });
-
-  if (!response.ok) throw new Error("Erro ao criar meta");
-  return await response.json();
+  if (!res.ok) throw new Error("Erro ao criar meta");
+  return await res.json();
 }
 
 async function atualizarMetaAPI(metaId, concluida) {
-  const response = await fetch(`${API_BASE_URL}/usuarios/${USER_ID}/metas/${metaId}`, {
+  const res = await fetch(`http://localhost:8080/api/----/${metaId}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${getToken()}`
+    },
     body: JSON.stringify({ concluida })
   });
-
-  if (!response.ok) throw new Error("Erro ao atualizar meta");
+  if (!res.ok) throw new Error("Erro ao atualizar meta");
 }
 
 async function deletarMetaAPI(metaId) {
-  const response = await fetch(`${API_BASE_URL}/usuarios/${USER_ID}/metas/${metaId}`, {
-    method: "DELETE"
+  const res = await fetch(`http://localhost:8080/api/----/${metaId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${getToken()}` }
   });
-
-  if (!response.ok) throw new Error("Erro ao excluir meta");
+  if (!res.ok) throw new Error("Erro ao excluir meta");
 }
 
 function preencherCampos(usuario) {
@@ -259,4 +275,3 @@ function sair() {
   window.location.href = "/src/index.html";
 }
 
-*/

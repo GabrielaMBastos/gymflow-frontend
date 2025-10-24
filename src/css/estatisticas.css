@@ -44,21 +44,33 @@ header{
 }
 
 main{
-    display: flex;
-    align-items: center;
-    display: flex;
-    width: 90%;
-    gap: 1.5em;
+    width: 85%;
     margin: 0 auto ;
-    margin-top: 10em;
-}
-
-.grafico-container{
+    margin-top: 2em;
     background-color: #fff;
-    padding: 1em;
     border-radius: 5px;
     box-shadow: 0 2px 6px #616161;
-    margin-top: 1em;
+}
+
+.graficos-container{
+    display: flex;
+    justify-content: center;
+    padding: 3em 0 3em 0;
+    gap: 3em;
+}
+
+.graficos-container-1, .graficos-container-2{
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+
+}
+
+.grafico-container canvas{
+    width: 50em;
+    height: 35em;
+    background-color: #e2e1e14f;
+    border-radius: 5px;
 }
 
 
@@ -90,7 +102,7 @@ main{
     }
 
     .logo-img{
-        width: 60px;
+        width: 50px;
     }
 
     .logo-text{

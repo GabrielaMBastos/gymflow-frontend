@@ -283,6 +283,7 @@ body {
         background-image: url(../assets/bg-portrait.PNG);
         background-size: cover;
         background-position: 50%;
+        height: auto;
     }
     
     .login-container {

@@ -8,13 +8,13 @@ body {
     background-position: 50%;
 }
 
-.login-container {
+.cadastro-container {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.login-container-left {
+.cadastro-container-left {
     text-align: center;
     padding-right: 3em;
 }
@@ -24,7 +24,7 @@ body {
     margin-bottom: 1em;
 }
 
-.login-container-left p {
+.cadastro-container-left p {
     width: 20em;
     font-size: 26px;
     font-weight: 500;
@@ -32,20 +32,20 @@ body {
     color: #616161;
 }
 
-.login-container-right {
+.cadastro-container-right {
     background-color: #fff;
     border-radius: 5px;
     padding: 3em;
     box-shadow: 4px 5px 15px #010113;
 }
 
-.login-container-right h2 {
+.cadastro-container-right h2 {
     font-family: "Archivo Black", sans-serif;
     font-size: 50px;
     color: #1565C0;
 }
 
-.login-container-right p {
+.cadastro-container-right p {
     font-size: 18px;
     color: #616161;
 }
@@ -117,7 +117,7 @@ body {
     opacity: 1;
 }
 
-.login {
+.cadastro {
     display: flex;
     flex-direction: row;
     gap: 0.5em;
@@ -125,7 +125,7 @@ body {
     text-align: center;
 }
 
-.login a {
+.cadastro a {
     cursor: pointer;
     text-decoration: none;
     color: #000;
@@ -179,10 +179,10 @@ body {
 
 /* Responsividade*/
 @media (max-width: 1200px){  
-    .login-container-left p{
+    .cadastro-container-left p{
         font-size: 24px; 
     }
-    .login-container-right h2{
+    .cadastro-container-right h2{
         font-size: 40px;
     }
 }
@@ -191,39 +191,39 @@ body {
     .img-logo{
         width: 20em;
     }
-    .login-container-left p{
+    .cadastro-container-left p{
         font-size: 16px;
     }
-    .login-container-right h2{
+    .cadastro-container-right h2{
         font-size: 35px;
     }
 }
 
 @media (max-width: 480px){
-    .login-container-right h2{
+    .cadastro-container-right h2{
         font-size: 28px;
     }
 
-    .login-container-right p{
+    .cadastro-container-right p{
         font-size: 14px;
     }
 }
 
 /* Landscape pequenos aparelhos */
 @media (max-width: 812px) and (orientation: landscape) {
-    .login-body{
+    .cadastro-body{
         height: auto;
         background-image: url(../assets/bg-portrait.PNG);
         background-position: 50%;
     }
 
-    .login-container {
+    .cadastro-container {
         flex-direction: column;
         align-items: center;
         margin: 3em;
     }
 
-    .login-container-left {
+    .cadastro-container-left {
         padding-right: 0;
         margin-bottom: 1.5em;
     }
@@ -232,30 +232,31 @@ body {
         width: 12em;
     }
 
-    .login-container-left p {
+    .cadastro-container-left p {
         display: none;
     }
 
-    .login-container-right {
+    .cadastro-container-right {
         padding: 2em;
     }
 }
 
 /* Portrait mode todos */
 @media (orientation: portrait) {
-    .login-body{
+    .cadastro-body{
         background-image: url(../assets/bg-portrait.PNG);
         background-size: cover;
         background-position: 50%;
+        height: auto;
     }
     
-    .login-container {
+    .cadastro-container {
         flex-direction: column;
         align-items: center;
         margin: 3em;
     }
 
-    .login-container-left {
+    .cadastro-container-left {
         margin-bottom: 2em;
         padding-right: 0; 
         text-align: center;
@@ -265,11 +266,11 @@ body {
         width: 12em;
     }
 
-    .login-container-left p {
+    .cadastro-container-left p {
         display: none;   
     }
 
-    .login-container-right {
+    .cadastro-container-right {
         padding: 2em;
         width: 90%;
     }

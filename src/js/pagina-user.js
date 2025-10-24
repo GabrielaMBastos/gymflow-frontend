@@ -272,6 +272,6 @@ function closeNav() {
 
 // sair
 function sair() {
-  window.location.href = "/src/index.html";
+  window.location.href = "../index.html";
 }
 

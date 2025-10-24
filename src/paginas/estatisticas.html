@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/src/css/styles.css" />
-  <link rel="stylesheet" href="/src/css/estatisticas.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/estatisticas.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -18,21 +18,21 @@
 <body>
   <header>
     <div class="logo-container">
-      <img class="logo-img" src="/src/assets/gymflow-logo-img.PNG" />
-      <img class="logo-text" src="/src/assets/gymflow-logo-texto.PNG" />
+      <img class="logo-img" src="assets/gymflow-logo-img.PNG" />
+      <img class="logo-text" src="assets/gymflow-logo-texto.PNG" />
     </div>
     <nav class="nav">
       <a href="#">Início</a>
-      <a href="/src/paginas/estatisticas.html">Estatísticas</a>
-      <a href="/src/paginas/pagina-user.html">Meu perfil</a>
+      <a href="paginas/estatisticas.html">Estatísticas</a>
+      <a href="paginas/pagina-user.html">Meu perfil</a>
     </nav>
 
     <!-- Nav lateral-->
     <nav id="navSide" class="nav-side">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
       <a href="#">Início</a>
-      <a href="/src/paginas/estatisticas.html">Estatísticas</a>
-      <a href="/src/paginas/user-page.html">Meu perfil</a>
+      <a href="paginas/estatisticas.html">Estatísticas</a>
+      <a href="paginas/user-page.html">Meu perfil</a>
     </nav>
     <span class="nav-side-icon" onclick="openNav()"><i class="fa-solid fa-bars"></i></span>
   </header>
@@ -40,10 +40,10 @@
 
   <main>
     <div class="grafico-container">
-        <canvas id="graficoPizza"></canvas>
+        <canvas id="graficoPizza" width="500" height="500" ></canvas>
     </div>
     <div class="grafico-container">
-      <canvas id=""></canvas>
+      <canvas id="graficoEvolucao" width="500" height="500" ></canvas>
     </div>
     <div class="grafico-container">
       <canvas id=""></canvas>
@@ -53,6 +53,6 @@
     </div>
   </main>
 
-  <script src="/src/js/estatisticas.js"></script>>
+  <script src="js/estatisticas.js"></script>>
 </body>
 </html>

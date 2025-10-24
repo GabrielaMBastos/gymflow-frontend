@@ -1,5 +1,5 @@
 body{
-    background-image: url(/src/assets/bg.png);
+    background-image: url(assets/bg.png);
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -54,7 +54,6 @@ main{
 }
 
 .grafico-container{
-    width: 100%;
     background-color: #fff;
     padding: 1em;
     border-radius: 5px;
@@ -81,7 +80,7 @@ main{
 /* Portrait mode todos e Landscape pequenos */
 @media (orientation: portrait), (max-width: 940px) and (orientation: landscape) {
     body{
-        background-image: url(/src/assets/bg-portrait.PNG);
+        background-image: url(assets/bg-portrait.PNG);
         background-size: cover;
         background-position: 50%;
     }

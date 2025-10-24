@@ -253,7 +253,7 @@ body {
     .cadastro-container {
         flex-direction: column;
         align-items: center;
-        margin: 1%;
+        margin: 2em;
     }
 
     .cadastro-container-left {

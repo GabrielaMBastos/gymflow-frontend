@@ -1,6 +1,6 @@
 
 
-document.addEventListener("DOMContentLoaded", async () => {
+/*document.addEventListener("DOMContentLoaded", async () => {
   try {
     const usuario = await carregarUsuarioAPI();
     preencherCampos(usuario);
@@ -19,7 +19,7 @@ function getToken() {
     throw new Error("Usuário não autenticado.");
   }
   return token;
-}
+}*/
 
 
 // requisições - usuário

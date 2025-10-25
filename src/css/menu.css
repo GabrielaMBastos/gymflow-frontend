@@ -467,3 +467,331 @@ input[type="text"] {
     margin-left: 140px;
     margin-right: 100px;
 }
+
+@media (max-width: 1024px) {
+
+  h1 { font-size: 18px; }
+  h2 { font-size: 24px; }
+  h3, .organize-treinos { font-size: 40px; }
+  h4 { font-size: 22px; }
+
+  .titulo-carrosel {
+    margin: 0 10% 4% 10%;
+    text-align: center;
+  }
+
+  .carrosel {
+    width: 420px;
+    height: 300px;
+  }
+
+  .criar-e-editar-ficha {
+    width: 70%;
+    margin-left: 15%;
+  }
+
+  .separacao-fichas {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .treinos {
+    width: 320px;
+    height: 550px;
+    margin: 15px;
+  }
+
+  .ocultar {
+    flex-wrap: wrap;
+  }
+
+  .logo img {
+    width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  h1 { font-size: 16px; }
+  h2 { font-size: 20px; }
+  h3, .organize-treinos { font-size: 30px; }
+  h4 { font-size: 20px; }
+
+  .cabecalho {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .conteudo-cabecalho {
+    font-size: 20px;
+    line-height: 40px;
+  }
+
+  .logo {
+    padding: 0 5%;
+  }
+
+  .logo img {
+    width: 250px;
+  }
+
+  .quadro-de-imagens {
+    flex-direction: column;
+    height: auto;
+    padding: 40px 5px;
+  }
+
+  .carrosel {
+    width: 90%;
+    height: 250px;
+  }
+
+  .titulo-carrosel {
+    margin: 20px auto;
+  }
+
+  .criar-e-editar-ficha {
+    width: 90%;
+    margin-left: 5%;
+    border-bottom: 1px solid #2b2727;
+  }
+
+  .separacao-fichas {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+  }
+
+  .treinos {
+    width: 90%;
+    height: auto;
+    margin-bottom: 25px;
+  }
+
+  .ocultar {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .ocultar-treinos {
+    margin: 0;
+  }
+
+  .topo,
+  .botao-ficha,
+  .botao-ficha2 {
+    width: 80%;
+    max-width: none;
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+}
+@media (max-width: 480px) {
+
+  h1 { font-size: 14px; }
+  h2 { font-size: 18px; }
+  h3, .organize-treinos { font-size: 24px; }
+  h4 { font-size: 18px; }
+
+  .carrosel {
+    height: 200px;
+  }
+
+  .titulo-carrosel h1,
+  .titulo-carrosel h2 {
+    margin: 0 5%;
+  }
+
+  .treinos {
+    width: 95%;
+    padding: 10px;
+  }
+
+  .topo,
+  .botao-ficha,
+  .botao-ficha2 {
+    width: 90%;
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .conteudo-cabecalho {
+    font-size: 18px;
+  }
+}
+
+/* ====== TABLETS ====== */
+@media (max-width: 1024px) {
+
+  h1 { font-size: 18px; }
+  h2 { font-size: 24px; }
+  h3, .organize-treinos { font-size: 40px; }
+  h4 { font-size: 22px; }
+
+  .titulo-carrosel {
+    margin: 0 10% 4% 10%;
+    text-align: center;
+  }
+
+  .carrosel {
+    width: 420px;
+    height: 300px;
+  }
+
+  .criar-e-editar-ficha {
+    width: 70%;
+    margin-left: 15%;
+  }
+
+  .separacao-fichas {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .treinos {
+    width: 320px;
+    height: 550px;
+    margin: 15px;
+  }
+
+  .ocultar {
+    flex-wrap: wrap;
+  }
+
+  .logo img {
+    width: 350px;
+  }
+}
+
+/* ====== CELULARES ====== */
+@media (max-width: 768px) {
+
+  h1 { font-size: 16px; }
+  h2 { font-size: 20px; }
+  h3, .organize-treinos { font-size: 30px; }
+  h4 { font-size: 20px; }
+
+  .cabecalho {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .conteudo-cabecalho {
+    font-size: 20px;
+    line-height: 40px;
+  }
+
+  .logo {
+    padding: 0 5%;
+  }
+
+  .logo img {
+    width: 250px;
+  }
+
+  .quadro-de-imagens {
+    flex-direction: column;
+    height: auto;
+    padding: 40px 5px;
+  }
+
+  .carrosel {
+    width: 90%;
+    height: 250px;
+  }
+
+  .titulo-carrosel {
+    margin: 20px auto;
+  }
+
+  .criar-e-editar-ficha {
+    width: 90%;
+    margin-left: 5%;
+    border-bottom: 1px solid #2b2727;
+  }
+
+  .separacao-fichas {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+  }
+
+  .treinos {
+    width: 90%;
+    height: auto;
+    margin-bottom: 25px;
+  }
+
+  .ocultar {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .ocultar-treinos {
+    margin: 0;
+  }
+
+  .topo,
+  .botao-ficha,
+  .botao-ficha2 {
+    width: 80%;
+    max-width: none;
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+}
+
+/* ====== CELULARES PEQUENOS ====== */
+@media (max-width: 480px) {
+
+  h1 { font-size: 14px; }
+  h2 { font-size: 18px; }
+  h3, .organize-treinos { font-size: 24px; }
+  h4 { font-size: 18px; }
+
+  .carrosel {
+    height: 200px;
+  }
+
+  .titulo-carrosel h1,
+  .titulo-carrosel h2 {
+    margin: 0 5%;
+  }
+
+  .treinos {
+    width: 95%;
+    padding: 10px;
+  }
+
+  .topo,
+  .botao-ficha,
+  .botao-ficha2 {
+    width: 90%;
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .conteudo-cabecalho {
+    font-size: 18px;
+  }
+}

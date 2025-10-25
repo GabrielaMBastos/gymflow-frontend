@@ -506,7 +506,9 @@ input[type="number"] {
 
     .main-container{
         margin-bottom: 1em;
-        width: 70%;
+        width: 75%;
+        padding: 2em;
+
     }
 
 

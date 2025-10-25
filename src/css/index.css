@@ -1,5 +1,5 @@
 body {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     background-image: url(../assets/bg.png);
@@ -284,6 +284,8 @@ body {
         background-size: cover;
         background-position: 50%;
         height: auto;
+        display: flex;
+        flex-direction: column-reverse;
     }
     
     .login-container {
@@ -293,13 +295,17 @@ body {
     }
 
     .login-container-left {
-        margin-bottom: 2em;
+        margin-bottom: 1em;
         padding-right: 0; 
         text-align: center;
     }
 
+    .form-info input{
+        padding: 1em;
+    }
+
     .img-logo {
-        width: 12em;
+        width: 10em;
     }
 
     .login-container-left p {

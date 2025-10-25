@@ -437,15 +437,16 @@ input[type="number"] {
     }
 
     header{
-        padding: 0.8em 1.5em;
+        padding: 0.8em 2em;
     }
 
     .logo-img{
-        width: 50px;
+        width: 40px;
     }
 
     .logo-text{
-        width: 150px;
+        width: 120px;
+        padding-bottom: 0.3em;
     }
 
     .nav{
@@ -507,8 +508,8 @@ input[type="number"] {
     .main-container{
         margin-bottom: 1em;
         width: 75%;
-        padding: 2em;
-
+        padding: 1em;
+        margin-top:1em;
     }
 
 

@@ -22,12 +22,17 @@ async function cadastro(event) {
     }
 
     // tenta contato com o back
-    try {
-        const res = await fetch("http://localhost:8080/api/----", {
+    const API_URL = window.location.hostname.includes("localhost")
+        ? "http://localhost:8080/api/usuarios"
+        : "https://gymflow-backend.up.railway.app/api/usuarios";
+
+    try{
+        const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome, email, senha })
+            body: JSON.stringify({ nome, email, senha }),
         });
+
 
         if (!res.ok) {
             // codigo de email já existente

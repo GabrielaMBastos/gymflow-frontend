@@ -1,3 +1,10 @@
+const API_URL =
+    window.location.hostname.includes("localhost") ||
+    window.location.hostname.includes("127.0.0.1")
+      ? "http://localhost:8080/api/usuarios/login"
+      : "https://gymflow-backend.up.railway.app/api/usuarios/login";
+
+
 async function login(event) {
     event.preventDefault();
 
@@ -14,12 +21,11 @@ async function login(event) {
         return;
     }
 
-    try {
-        // enviar dados para backend
-        const res = await fetch("http://localhost:8080/api/----", {
+    try{
+        const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha })
+            body: JSON.stringify({ email, senha }),
         });
 
         if (!res.ok) {
@@ -29,6 +35,7 @@ async function login(event) {
 
         const data = await res.json();
         localStorage.setItem("token", data.token); // salvar jwt no navegador
+        window.location.href = "/src/paginas/MenuPrincipal.html";
 
     } catch (err) {
         mostrarPopup("Erro de conexão com o servidor!");
@@ -60,12 +67,12 @@ async function redefinirSenha(event) {
         return;
     }
 
-    try {
-        // envia os dados para o backend
-        const res = await fetch("http://localhost:8080/api/----", {
+    
+    try{
+        const res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome, email, novaSenha })
+            body: JSON.stringify({ nome, email, senha: novaSenha }),
         });
 
         const data = await res.json();

@@ -46,26 +46,35 @@
 
   <main>
 
-    <div class="graficos-container">
-      
-      <div class="graficos-container-1">
-        <div class="grafico-container">
-            <canvas id="graficoPizza"  ></canvas>
-        </div>
-        <div class="grafico-container">
-          <canvas id="graficoLinha" ></canvas>
-        </div>
-      </div>
+    <div class="container-graficos">
 
-      <div class="graficos-container-2">
-        <div class="grafico-container">
-          <canvas id="" ></canvas>
-        </div>
-        <div class="grafico-container">
-          <canvas id="" ></canvas>
-        </div>
-      </div>
-    </div>  
+  <!-- Gráfico de Pizza -->
+  <div class="card-grafico">
+    <h3>Proporção por Grupo Muscular (%)</h3>
+    <canvas id="graficoPizza" class="grafico"></canvas>
+  </div>
+
+  <!-- Gráfico de Linha -->
+  <div class="card-grafico">
+    <h3>Evolução de Carga (kg)</h3>
+    <canvas id="graficoLinha" class="grafico"></canvas>
+  </div>
+
+  <!-- Gráfico Radar -->
+  <div class="card-grafico">
+    <h3>Equilíbrio Muscular</h3>
+    <canvas id="graficoRadar" class="grafico-secundario"></canvas>
+  </div>
+
+  <!-- Gráfico de Barras -->
+  <div class="card-grafico">
+    <h3>Volume de Treino Semanal</h3>
+    <canvas id="graficoBarra" class="grafico-secundario"></canvas>
+  </div>
+
+</div>
+
+
     
   </main>
 

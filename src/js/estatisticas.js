@@ -343,9 +343,195 @@ function criarGraficoLinha(labels, datasets) {
   });
 }
 
+async function buscarDadosECriarGraficoHorizontal() {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token não encontrado. Faça login novamente.");
+      return;
+    }
+
+    // Busca as séries (cada série tem data e duração de treino)
+    const respostaSeries = await fetch(`${BASE_URL}/series`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!respostaSeries.ok) throw new Error("Erro ao buscar séries.");
+
+    const series = await respostaSeries.json();
+
+    // Agrupa minutos totais por semana
+    const semanal = {};
+    for (const s of series) {
+      const data = new Date(s.data);
+      const semana = `${data.getFullYear()}-W${Math.ceil(data.getDate() / 7)}`;
+      const duracao = s.tempoTreinoMin || 30; // se o backend tiver duração, usa, senão simula 30min
+      semanal[semana] = (semanal[semana] || 0) + duracao;
+    }
+
+    const labels = Object.keys(semanal).sort();
+    const valores = Object.values(semanal);
+
+    criarGraficoHorizontal(labels, valores);
+  } catch (erro) {
+    console.error("Erro ao criar gráfico horizontal:", erro);
+  }
+}
+
+function criarGraficoHorizontal(labels, valores) {
+  const ctx = document.getElementById("graficoHorizontal").getContext("2d");
+  const gradient = ctx.createLinearGradient(0, 0, 600, 0);
+  gradient.addColorStop(0, "#1565C0");
+  gradient.addColorStop(1, "#121212");
+
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Tempo de Treino (min)",
+          data: valores,
+          backgroundColor: gradient,
+          borderRadius: 15,
+          borderSkipped: false,
+        },
+      ],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: "Volume de Treino Semanal",
+          font: { size: 18, family: "Montserrat" },
+          color: "#333",
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.parsed.x} minutos`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: { color: "rgba(200, 200, 200, 0.2)" },
+          ticks: { color: "#333" },
+        },
+        y: {
+          grid: { display: false },
+          ticks: { color: "#333" },
+        },
+      },
+    },
+  });
+}
+
+// Gráfico Radar
+
+async function buscarDadosECriarGraficoRadar() {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token não encontrado. Faça login novamente.");
+      return;
+    }
+
+    // Buscar fichas do usuário
+    const respostaFichas = await fetch(`${BASE_URL}/fichas`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!respostaFichas.ok) throw new Error("Erro ao buscar fichas.");
+    const dadosFichas = await respostaFichas.json();
+    const fichas = dadosFichas.fichas || [];
+
+    const avaliacoes = []; 
+    const gruposMusculares = new Set();
+
+    for (const ficha of fichas) {
+      const respostaEx = await fetch(`${BASE_URL}/fichas/exercicio?idFicha=${ficha.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!respostaEx.ok) continue;
+
+      const dadosEx = await respostaEx.json();
+      const exercicios = dadosEx.exerciciosDaFicha || [];
+
+      const somaPorGrupo = {};
+      exercicios.forEach((ex) => {
+        const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
+        gruposMusculares.add(grupo);
+        somaPorGrupo[grupo] = (somaPorGrupo[grupo] || 0) + (ex.cargaMedia || 50);
+      });
+
+      avaliacoes.push({ nome: ficha.nomeFicha || `Ficha ${ficha.id}`, grupos: somaPorGrupo });
+    }
+
+    const labels = Array.from(gruposMusculares);
+    const cores = gerarCores(avaliacoes.length);
+
+    const datasets = avaliacoes.map((av, i) => ({
+      label: av.nome,
+      data: labels.map((g) => av.grupos[g] || 0),
+      fill: true,
+      backgroundColor: `${cores[i]}40`, 
+      borderColor: cores[i],
+      pointBackgroundColor: cores[i],
+      borderWidth: 2,
+    }));
+
+    criarGraficoRadar(labels, datasets);
+  } catch (erro) {
+    console.error("Erro ao criar gráfico radar:", erro);
+  }
+}
+
+function criarGraficoRadar(labels, datasets) {
+  const ctx = document.getElementById("graficoRadar").getContext("2d");
+
+  new Chart(ctx, {
+    type: "radar",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      elements: { line: { borderWidth: 3 } },
+      scales: {
+        r: {
+          angleLines: { color: "#ccc" },
+          grid: { color: "#ddd" },
+          pointLabels: { font: { size: 14, family: "Montserrat" }, color: "#333" },
+          suggestedMin: 0,
+          suggestedMax: 100,
+        },
+      },
+      plugins: {
+        legend: {
+          position: "top",
+          labels: { font: { size: 14, family: "Montserrat" }, color: "#333" },
+        },
+        title: {
+          display: true,
+          text: "Equilíbrio Muscular por Avaliação",
+          font: { size: 20, family: "Montserrat" },
+          color: "#333",
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}`,
+          },
+        },
+      },
+    },
+  });
+}
+
+
 buscarDadosECriarGraficoPizza();
 buscarDadosECriarGraficoLinha();
-
+buscarDadosECriarGraficoHorizontal();
+buscarDadosECriarGraficoRadar();
 
 // menu lateral
 window.openNav = function() {

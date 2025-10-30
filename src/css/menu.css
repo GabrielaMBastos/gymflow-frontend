@@ -86,7 +86,7 @@ h4 {
     padding-bottom: 15px;
     clip-path: polygon(0 5%, 100% 0, 100% 100%, 0 85%);
     margin-bottom: 75px;
-    height: 500px;
+    height: 28vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -193,8 +193,8 @@ h4 {
 }
 
 .separacao-fichas {
-    width: 1700px;
-    height: 800px;
+    width: 92vw;
+    height: 38vw;
     display: flex;
     justify-content: center;
     align-items: flex;
@@ -204,8 +204,8 @@ h4 {
 
 .treinos {
     margin-left: 2%;
-    width: 400px;
-    height: 650px;
+    width: 20vw;
+    height: 60vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -288,6 +288,10 @@ h4 {
     padding-top: 6%;
 }
 
+.logo-img-grande{
+    width:40vw;
+    height: 40vh;
+}
 .criar-ficha {
 
     display: flex;
@@ -456,18 +460,6 @@ input[type="text"] {
     background-color: none;
 }
 
-.ocultar-treinos {
-    display: inline-block;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background-position: center;
-    margin-top: -220px;
-    top: 0;
-    margin-left: 140px;
-    margin-right: 100px;
-}
-
 @media (max-width: 1024px) {
 
   h1 { font-size: 18px; }
@@ -498,8 +490,8 @@ input[type="text"] {
   }
 
   .treinos {
-    width: 320px;
-    height: 550px;
+    width: 100vw;
+    height: 40vh;
     margin: 15px;
   }
 
@@ -508,7 +500,7 @@ input[type="text"] {
   }
 
   .logo img {
-    width: 350px;
+    width: 20vw;
   }
 }
 
@@ -535,12 +527,13 @@ input[type="text"] {
   }
 
   .logo img {
-    width: 250px;
+    width: 20vw;
   }
 
   .quadro-de-imagens {
     flex-direction: column;
-    height: auto;
+    height: 160vw;
+    width: 100%;
     padding: 40px 5px;
   }
 
@@ -568,7 +561,7 @@ input[type="text"] {
 
   .treinos {
     width: 90%;
-    height: auto;
+    height: 100vh;
     margin-bottom: 25px;
   }
 
@@ -614,6 +607,7 @@ input[type="text"] {
 
   .treinos {
     width: 95%;
+    height: 100vh;
     padding: 10px;
   }
 
@@ -627,51 +621,6 @@ input[type="text"] {
 
   .conteudo-cabecalho {
     font-size: 18px;
-  }
-}
-
-/* ====== TABLETS ====== */
-@media (max-width: 1024px) {
-
-  h1 { font-size: 18px; }
-  h2 { font-size: 24px; }
-  h3, .organize-treinos { font-size: 40px; }
-  h4 { font-size: 22px; }
-
-  .titulo-carrosel {
-    margin: 0 10% 4% 10%;
-    text-align: center;
-  }
-
-  .carrosel {
-    width: 420px;
-    height: 300px;
-  }
-
-  .criar-e-editar-ficha {
-    width: 70%;
-    margin-left: 15%;
-  }
-
-  .separacao-fichas {
-    width: 100%;
-    margin-left: 0;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .treinos {
-    width: 320px;
-    height: 550px;
-    margin: 15px;
-  }
-
-  .ocultar {
-    flex-wrap: wrap;
-  }
-
-  .logo img {
-    width: 350px;
   }
 }
 
@@ -699,12 +648,13 @@ input[type="text"] {
   }
 
   .logo img {
-    width: 250px;
+    width: 10vw;
   }
 
   .quadro-de-imagens {
     flex-direction: column;
-    height: auto;
+    height: 160vw;
+    width: 100%;
     padding: 40px 5px;
   }
 
@@ -732,6 +682,7 @@ input[type="text"] {
 
   .treinos {
     width: 90%;
+    height: 100vh;
     height: auto;
     margin-bottom: 25px;
   }
@@ -759,6 +710,10 @@ input[type="text"] {
   .modal-content {
     width: 90%;
   }
+  .logo-img-grande{
+    width:60vw;
+    height: 30vh;
+}
 }
 
 /* ====== CELULARES PEQUENOS ====== */
@@ -780,6 +735,7 @@ input[type="text"] {
 
   .treinos {
     width: 95%;
+    height: 100vh;
     padding: 10px;
   }
 
@@ -794,4 +750,45 @@ input[type="text"] {
   .conteudo-cabecalho {
     font-size: 18px;
   }
+  .logo-img-grande{
+    width:60vw;
+    height: 30vh;
+}
+}
+
+.nav {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;       
+    padding-right: 20px;       
+}
+.nav a{
+    text-decoration: none;
+    padding-right: 1em;
+    font-size: 22px;
+    color: #1565C0;
+    font-weight: 600;
+    margin-top: -75px;
+    
+}
+
+.nav a:hover{
+    color: #3b3b3b;
+}
+
+.nav-side, .nav-side-icon{
+    display: none;
+}
+.logo-container{
+    display: flex;
+    align-items: center;
+}
+
+.logo-img{
+    width: 80px;
+}
+
+.logo-text{
+    width: 200px;
+    padding-top: 1em;
 }

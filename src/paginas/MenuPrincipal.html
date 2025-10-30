@@ -2,32 +2,34 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu principal</title>
-    <link rel="stylesheet" type="text/css" href="\src\css\menu.css">
-    <script src="\src\js\menu.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="../css/menu.css">
+    <script src="../js/menu.js" defer></script>
 </head>
-<header>
-    <div class="logo-container">
-      <img class="logo-img" src="/src/assets/gymflow-logo-img.PNG" />
-      <img class="logo-text" src="/src/assets/gymflow-logo-texto.PNG" />
-    </div>
-    <nav class="nav">
-      <a href="#">Início</a>
-      <a href="/src/paginas/estatisticas.html">Estatísticas</a>
-      <a href="/src/paginas/pagina-user.html">Meu perfil</a>
-    </nav>
-
-    <!-- Nav lateral-->
-    <nav id="navSide" class="nav-side">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <a href="#">Início</a>
-      <a href="/src/paginas/estatisticas.html">Estatísticas</a>
-      <a href="/src/paginas/user-page.html">Meu perfil</a>
-    </nav>
-    <span class="nav-side-icon" onclick="openNav()"><i class="fa-solid fa-bars"></i></span>
-  </header>
 
 <body>
+    <header>
+        <div class="logo-container">
+            <img class="logo-img" src="../assets/gymflow-logo-img.PNG" />
+            <img class="logo-text" src="../assets/gymflow-logo-texto.PNG" />
+        </div>
+        <nav class="nav">
+            <a href="#">Início</a>
+            <a href="../paginas/estatisticas.html">Estatísticas</a>
+            <a href="../paginas/pagina-user.html">Meu perfil</a>
+        </nav>
+
+        <!-- Nav lateral-->
+        <nav id="navSide" class="nav-side">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#">Início</a>
+            <a href="../paginas/estatisticas.html">Estatísticas</a>
+            <a href="../paginas/user-page.html">Meu perfil</a>
+        </nav>
+        <span class="nav-side-icon" onclick="openNav()"><i class="fa-solid fa-bars"></i></span>
+    </header>
+
     <div class="logo">
         <div>
             <div class="organize-treinos">Organize seus treinos,</div>
@@ -41,7 +43,7 @@
         <button class="topo">Cadastre suas informações</button>
         <br>
     </div>
-    <img src="logo.png" width="500">
+    <img class="logo-img-grande" src="../assets/logo.png">
     </div>
 
     <div class="quadro-de-imagens">
@@ -60,9 +62,9 @@
         <div class="carrosel">
 
             <div class="slides">
-                <div class="slide"><img src="\src\assets\academia1.jpg" alt="Imagem 1"></div>
-                <div class="slide"><img src="\src\assets\academia2.jpg" alt="Imagem 2"></div>
-                <div class="slide"><img src="\src\assets\academia3.jpg" alt="Imagem 13"></div>
+                <div class="slide"><img src="..\assets\academia1.jpg" alt="Imagem 1"></div>
+                <div class="slide"><img src="..\assets\academia2.jpg" alt="Imagem 2"></div>
+                <div class="slide"><img src="..\assets\academia3.jpg" alt="Imagem 13"></div>
             </div>
             <div class="indicators">
                 <span class="active"></span>
@@ -109,14 +111,6 @@
             <div class="fichas" id="treino3"></div>
             <div id="listaTreinos3"></div>
         </div>
-    </div>
-    <div class="ocultar">
-        <div class="ocultar-treinos"><button class="botao-ficha" onclick="toggleTreinos('treino1')">Ocultar ou mostrar
-                treino</button></div>
-        <div class="ocultar-treinos"><button class="botao-ficha" onclick="toggleTreinos('treino2')">Ocultar ou mostrar
-                treino</button></div>
-        <div class="ocultar-treinos"><button class="botao-ficha" onclick="toggleTreinos('treino3')">Ocultar ou mostrar
-                treino</button></div>
     </div>
 
 </body>

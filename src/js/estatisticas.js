@@ -8,30 +8,115 @@ function gerarCores(qtd) {
   return cores;
 }
 
+const BASE_URL =
+  window.location.hostname.includes("localhost") ||
+  window.location.hostname.includes("127.0.0.1")
+    ? "http://localhost:8080/api"
+    : "https://gymflow-backend.up.railway.app/api";
 
 // grafico pizza
 async function buscarDadosECriarGraficoPizza() {
   try {
-    const userId = localStorage.getItem("USER_ID"); 
-    const resposta = await fetch(`https://gymflow-backend.up.railway.app/api/exercicios?userId=${userId}`);
-    const dadosApi = await resposta.json();
+    const token = localStorage.getItem("token");
 
-    const contagem = {};
-    dadosApi.exercicios.forEach(item => {
-      const grupo = item.grupoMuscular;
-      contagem[grupo] = (contagem[grupo] || 0) + 1;
+    if (!token) {
+      console.error("Token não encontrado. Faça login novamente.");
+      return;
+    }
+
+    // decodificar o token JWT
+    let userId;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      userId = payload.idUsuario || payload.idUser || payload.id;
+    } catch (e) {
+      console.error("Erro ao decodificar o token:", e);
+      return;
+    }
+
+    if (!userId) {
+      console.error("ID do usuário não encontrado!");
+      return;
+    }
+
+    // buscar fichas do user
+    const respostaFichas = await fetch(`${BASE_URL}/fichas`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,               
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
     });
 
+    if (!respostaFichas.ok) {
+      throw new Error(`Erro ao buscar fichas: ${respostaFichas.status}`);
+    }
+
+    const dadosFichas = await respostaFichas.json();
+
+    const fichas =
+      dadosFichas.fichas ||
+      dadosFichas.content ||
+      (Array.isArray(dadosFichas) ? dadosFichas : []);
+
+    if (!Array.isArray(fichas) || fichas.length === 0) {
+      console.warn("Nenhuma ficha encontrada para o usuário.");
+      return;
+    }
+
+    // buscar exercícios de cada ficha
+    const contagem = {};
+
+    for (const ficha of fichas) {
+      const fichaId = ficha.idFicha || ficha.id;
+
+      const respostaExercicios = await fetch(
+        `${BASE_URL}/fichas/exercicio?idFicha=${fichaId}`,
+        {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/json",
+          },
+        }
+      );
+
+      if (!respostaExercicios.ok) {
+        console.warn(`Erro ao buscar exercícios da ficha ${fichaId}`);
+        continue;
+      }
+
+      const dadosEx = await respostaExercicios.json();
+      const listaExercicios = dadosEx.exerciciosDaFicha || dadosEx || [];
+
+      // contar grupos musculares
+      listaExercicios.forEach((ex) => {
+        const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
+        contagem[grupo] = (contagem[grupo] || 0) + 1;
+      });
+    }
+
+    // calcular percentuais
     const total = Object.values(contagem).reduce((a, b) => a + b, 0);
+    if (total === 0) {
+      console.warn("Nenhum exercício encontrado nas fichas.");
+      return;
+    }
+
     const labels = Object.keys(contagem);
-    const valores = Object.values(contagem).map(qtd => Number(((qtd / total) * 100).toFixed(1)));
+    const valores = Object.values(contagem).map((qtd) =>
+      Number(((qtd / total) * 100).toFixed(1))
+    );
     const cores = gerarCores(labels.length);
 
     criarGraficoPizza(labels, valores, cores);
+
   } catch (erro) {
-    console.error('Erro ao buscar os dados do gráfico de pizza:', erro);
+    console.error(" Erro ao buscar os dados do gráfico de pizza:", erro);
   }
 }
+
 
 function criarGraficoPizza(labels, valores, cores) {
   const ctx = document.getElementById("graficoPizza").getContext("2d");
@@ -69,49 +154,96 @@ function criarGraficoPizza(labels, valores, cores) {
 }
 
 // grafico linha
+let modoGrafico = "carga"; // alterna entre carga e repeticoes
+let chartInstance = null; 
+
 async function buscarDadosECriarGraficoLinha() {
   try {
-    const userId = localStorage.getItem("USER_ID"); 
-    const resposta = await fetch(`https://gymflow-backend.up.railway.app/api/....?userId=${userId}`);
-    const dadosApi = await resposta.json();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token não encontrado. Faça login novamente.");
+      return;
+    }
 
-    const porExercicio = {};
-    dadosApi.series.forEach(item => {
-      if (!porExercicio[item.exercicio]) {
-        porExercicio[item.exercicio] = [];
-      }
-      porExercicio[item.exercicio].push({ data: item.data, carga: item.carga });
+    // busca fichas do user
+    const respostaFichas = await fetch(`${BASE_URL}/fichas`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    const todasAsDatas = [...new Set(dadosApi.map(item => item.data))].sort();
+    if (!respostaFichas.ok) throw new Error("Erro ao buscar fichas.");
 
-    const cores = gerarCores(Object.keys(porExercicio).length);
-    const datasets = Object.entries(porExercicio).map(([exercicio, dados], i) => {
-      const valores = todasAsDatas.map(data => {
-        const registro = dados.find(d => d.data === data);
-        return registro ? registro.carga : null;
+    const dadosFichas = await respostaFichas.json();
+    const fichas = dadosFichas.fichas || dadosFichas || [];
+
+    const exercicioMap = {};
+
+    // pega os exercícios das fichas
+    for (const ficha of fichas) {
+      const respostaEx = await fetch(`${BASE_URL}/fichas/exercicio?idFicha=${ficha.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!respostaEx.ok) continue;
+      const dadosEx = await respostaEx.json();
+      for (const ex of dadosEx.exerciciosDaFicha || []) {
+        exercicioMap[ex.exercicioFichaId] = ex.equipamento;
+      }
+    }
+
+    // busca series (data, carga, repetições)
+    const respostaSeries = await fetch(`${BASE_URL}/series`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!respostaSeries.ok) throw new Error("Erro ao buscar séries.");
+    const series = await respostaSeries.json();
+
+    // agrupa por equipamento
+    const agrupado = {};
+    for (const s of series) {
+      const equipamento = exercicioMap[s.exercicioFichaId] || "Desconhecido";
+      if (!agrupado[equipamento]) agrupado[equipamento] = [];
+      agrupado[equipamento].push({
+        data: s.data,
+        carga: s.carga,
+        repeticoes: s.repeticoes,
+      });
+    }
+
+    // ordena por data e 
+    const todasAsDatas = [
+      ...new Set(series.map((s) => s.data)),
+    ].sort((a, b) => new Date(a) - new Date(b));
+
+    const cores = gerarCores(Object.keys(agrupado).length);
+    const datasets = Object.entries(agrupado).map(([equipamento, lista], i) => {
+      const valores = todasAsDatas.map((data) => {
+        const serie = lista.find((s) => s.data === data);
+        return serie ? serie[modoGrafico] : null;
       });
 
       return {
-        label: `${exercicio} (kg)`,
+        label: `${equipamento} (${modoGrafico === "carga" ? "kg" : "reps"})`,
         data: valores,
         borderColor: cores[i],
         backgroundColor: cores[i],
         tension: 0.3,
-        spanGaps: true
+        spanGaps: true,
       };
     });
 
     criarGraficoLinha(todasAsDatas, datasets);
   } catch (erro) {
-    console.error('Erro ao buscar os dados do gráfico de evolução:', erro);
+    console.error("Erro ao buscar dados do gráfico:", erro);
   }
 }
 
 function criarGraficoLinha(labels, datasets) {
   const ctx = document.getElementById("graficoLinha").getContext("2d");
 
-  new Chart(ctx, {
+  if (chartInstance) {
+    chartInstance.destroy(); // destrói o gráfico anterior
+  }
+
+  chartInstance = new Chart(ctx, {
     type: "line",
     data: { labels, datasets },
     options: {
@@ -119,35 +251,42 @@ function criarGraficoLinha(labels, datasets) {
       plugins: {
         title: {
           display: true,
-          text: "Evolução de Carga",
-          font: { size: 20 }
+          text:
+            modoGrafico === "carga"
+              ? "Evolução de Carga (kg)"
+              : "Evolução de Repetições",
+          font: { size: 20 },
         },
         legend: { position: "top" },
         tooltip: {
           callbacks: {
-            label: function(context) {
-              return `${context.dataset.label}: ${context.parsed.y} kg`;
-            }
-          }
-        }
+            label: (context) =>
+              `${context.dataset.label}: ${context.parsed.y} ${
+                modoGrafico === "carga" ? "kg" : "reps"
+              }`,
+          },
+        },
       },
       scales: {
         x: {
-          title: {
-            display: true,
-            text: "Data"
-          }
+          title: { display: true, text: "Data" },
         },
         y: {
           title: {
             display: true,
-            text: "Carga (kg)"
+            text: modoGrafico === "carga" ? "Carga (kg)" : "Repetições",
           },
-          beginAtZero: true
-        }
-      }
-    }
+          beginAtZero: true,
+        },
+      },
+    },
   });
+}
+
+// alterna entre carga e repetições
+function atualizarGrafico(novoModo) {
+  modoGrafico = novoModo;
+  buscarDadosECriarGraficoLinha();
 }
 
 

@@ -209,73 +209,40 @@ body {
     }
 }
 
-/* Landscape pequenos aparelhos */
-@media (max-width: 812px) and (orientation: landscape) {
-    .cadastro-body{
-        height: auto;
-        background-image: url(../assets/bg-portrait.PNG);
-        background-position: 50%;
-    }
+@media (orientation: portrait), (max-width: 940px) and (orientation: landscape) {
+  .cadastro-body {
+    background-image: url(../assets/bg-portrait.PNG);
+    background-size: cover;
+    background-position: 50%;
+    height: auto;
+  }
 
-    .cadastro-container {
-        flex-direction: column;
-        align-items: center;
-        margin: 3em;
-    }
+  .cadastro-container {
+    flex-direction: column;
+    align-items: center;
+    margin: 2em;
+  }
 
-    .cadastro-container-left {
-        padding-right: 0;
-        margin-bottom: 1.5em;
-    }
+  .cadastro-container-left {
+    padding-right: 0;
+    margin-bottom: 1.5em;
+    text-align: center;
+  }
 
-    .img-logo {
-        width: 12em;
-    }
+  .form-info input {
+    padding: 1em;
+  }
 
-    .cadastro-container-left p {
-        display: none;
-    }
+  .img-logo {
+    width: 10em;
+  }
 
-    .cadastro-container-right {
-        padding: 2em;
-    }
-}
+  .cadastro-container-left p {
+    display: none;   
+  }
 
-/* Portrait mode todos */
-@media (orientation: portrait) {
-    .cadastro-body{
-        background-image: url(../assets/bg-portrait.PNG);
-        background-size: cover;
-        background-position: 50%;
-        height: auto;
-    }
-    
-    .cadastro-container {
-        flex-direction: column;
-        align-items: center;
-        margin: 1em 3em;
-    }
-
-    .cadastro-container-left {
-        margin-bottom: 1em;
-        padding-right: 0; 
-        text-align: center;
-    }
-
-    .form-info input{
-        padding: 1em;
-    }
-
-    .img-logo {
-        width: 10em;
-    }
-
-    .cadastro-container-left p {
-        display: none;   
-    }
-
-    .cadastro-container-right {
-        padding: 2em;
-        width: 90%;
-    }
+  .cadastro-container-right {
+    padding: 2em;
+    width: 90%;
+  }
 }

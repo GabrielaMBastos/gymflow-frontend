@@ -295,8 +295,8 @@ input[type="number"] {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 0.5em;
-    max-height: 320px;
-    overflow-y: auto;
+    max-height: min(50vh, 320px); /**/
+    overflow-y: auto; 
     word-wrap: break-word;
 }
 
@@ -507,7 +507,7 @@ input[type="number"] {
 
     .main-container{
         margin-bottom: 1em;
-        width: 75%;
+        width: 85%;
         padding: 1em;
         margin-top:1em;
     }

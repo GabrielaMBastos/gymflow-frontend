@@ -444,12 +444,6 @@ function criarGraficoHorizontal(labels, valores) {
       responsive: true,
       plugins: {
         legend: { display: false },
-        title: {
-          display: true,
-          text: "Volume de Treino Semanal",
-          font: { size: 18, family: "Montserrat" },
-          color: "#333",
-        },
         tooltip: {
           callbacks: {
             label: (ctx) => `${ctx.parsed.x} minutos`,
@@ -474,7 +468,7 @@ function criarGraficoHorizontal(labels, valores) {
 // Gráfico Radar
 
 async function buscarDadosECriarGraficoRadar() {
-mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
+  mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
 
   try {
     const token = localStorage.getItem("token");
@@ -483,34 +477,39 @@ mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
       return;
     }
 
-    // Buscar fichas do usuário
     const respostaFichas = await fetch(`${API_URL}/fichas`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!respostaFichas.ok) throw new Error("Erro ao buscar fichas.");
+
     const dadosFichas = await respostaFichas.json();
     const fichas = dadosFichas.fichas || [];
 
-    const avaliacoes = []; 
+    const avaliacoes = [];
     const gruposMusculares = new Set();
 
     for (const ficha of fichas) {
-      const respostaEx = await fetch(`${API_URL}/fichas/exercicio?idFicha=${ficha.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!respostaEx.ok) continue;
+      try {
+        const respostaEx = await fetch(`${API_URL}/fichas/exercicio?idFicha=${ficha.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!respostaEx.ok) continue;
 
-      const dadosEx = await respostaEx.json();
-      const exercicios = dadosEx.exerciciosDaFicha || [];
+        const dadosEx = await respostaEx.json();
+        const exercicios = dadosEx.exerciciosDaFicha || [];
 
-      const somaPorGrupo = {};
-      exercicios.forEach((ex) => {
-        const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
-        gruposMusculares.add(grupo);
-        somaPorGrupo[grupo] = (somaPorGrupo[grupo] || 0) + (ex.cargaMedia || 50);
-      });
+        const somaPorGrupo = {};
+        exercicios.forEach((ex) => {
+          const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
+          gruposMusculares.add(grupo);
+          somaPorGrupo[grupo] = (somaPorGrupo[grupo] || 0) +
+            (ex.cargaMedia != null ? ex.cargaMedia : 50);
+        });
 
-      avaliacoes.push({ nome: ficha.nomeFicha || `Ficha ${ficha.id}`, grupos: somaPorGrupo });
+        avaliacoes.push({ nome: ficha.nomeFicha || `Ficha ${ficha.id}`, grupos: somaPorGrupo });
+      } catch (e) {
+        console.warn(`Erro ao carregar ficha ${ficha.id}:`, e);
+      }
     }
 
     const labels = Array.from(gruposMusculares);
@@ -520,7 +519,7 @@ mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
       label: av.nome,
       data: labels.map((g) => av.grupos[g] || 0),
       fill: true,
-      backgroundColor: `${cores[i]}40`, 
+      backgroundColor: `${cores[i]}40`,
       borderColor: cores[i],
       pointBackgroundColor: cores[i],
       borderWidth: 2,
@@ -532,10 +531,12 @@ mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
   }
 }
 
+let graficoRadarInstance = null;
 function criarGraficoRadar(labels, datasets) {
   const ctx = document.getElementById("graficoRadar").getContext("2d");
+  if (graficoRadarInstance) graficoRadarInstance.destroy();
 
-  new Chart(ctx, {
+  graficoRadarInstance = new Chart(ctx, {
     type: "radar",
     data: { labels, datasets },
     options: {
@@ -555,20 +556,24 @@ function criarGraficoRadar(labels, datasets) {
           position: "top",
           labels: { font: { size: 14, family: "Montserrat" }, color: "#333" },
         },
-        title: {
-          display: true,
-          text: "Equilíbrio Muscular por Avaliação",
-          font: { size: 20, family: "Montserrat" },
-          color: "#333",
-        },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}`,
-          },
-        },
       },
     },
   });
+}
+
+function gerarCores(qtd) {
+  const coresBase = ["#1565C0", "#43A047", "#FDD835", "#E53935", "#8E24AA", "#00897B", "#FB8C00"];
+  return Array.from({ length: qtd }, (_, i) => coresBase[i % coresBase.length]);
+}
+
+function mostrarMensagemCanvas(id, mensagem) {
+  const canvas = document.getElementById(id);
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "16px Montserrat";
+  ctx.fillStyle = "#555";
+  ctx.textAlign = "center";
+  ctx.fillText(mensagem, canvas.width / 2, canvas.height / 2);
 }
 
 

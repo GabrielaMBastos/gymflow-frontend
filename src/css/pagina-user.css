@@ -97,24 +97,7 @@ main{
     outline: none;
 }
 
-.senha{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #616161;
-}
-
-.senha input{
-    width: 100%;
-    border: none;
-}
-
-.senha i{
-    cursor: pointer;
-    padding-right: 1em;
-}
-
-#name, #email, #senha{
+#name, #email {
     font-size: 16px;
     color: #616161;
 }
@@ -155,18 +138,31 @@ main{
     color: #3b82f6;
 }
 
-.imc{
-    background-color: #1565c031;
-    border: none;
-    border-radius: 2em;
-    padding: 0.5em;
-    width: 90%;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+.imc {
+  background-color: #1565c031;
+  border-radius: 2em;
+  padding: 0.6em 0.8em;
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+
+.imc-numero {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3b82f6;
+  margin: 0;
+}
+
+.imc-classificacao {
+  font-size: 14px;
+  color: #616161;
+  margin: 0;
+}
+
 
 /* Botões*/
 
@@ -207,23 +203,33 @@ main{
     opacity: 1;
 }
 
-/* Botão editar ativado*/
-
-.edit-mode .left-section1 input{
-    background-color: #cccccc94;
-    border-radius: 5px;
-    outline: none;
-} 
-
-.edit-mode .left-section2 input[type="number"]{
-    outline: none;
-    border-bottom: 2px solid #ccc;
-     transition:  0.2s ease;
+/* inputs bloqueados */
+.left-section2 input[readonly],
+.left-section1 input[readonly] {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.7;
 }
 
-.edit-mode #imcValor{
-    border-bottom: none;
+/* modo edição ativo */
+.edit-mode .left-section2 input[type="number"],
+.edit-mode .left-section1 input[type='text'],
+.edit-mode .left-section1 input[type='email'] {
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  pointer-events: auto;
+  cursor: text;
+  transition: 0.2s ease;
 }
+
+.edit-mode .left-section2 input[type="number"]:focus,
+.edit-mode .left-section1 input:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+
 
 /* Chrome, Safari, Edge */
 input[type="number"]::-webkit-inner-spin-button,

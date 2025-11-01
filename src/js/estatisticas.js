@@ -8,6 +8,19 @@ function gerarCores(qtd) {
   return cores;
 }
 
+function mostrarMensagemCanvas(idCanvas, mensagem) {
+  const canvas = document.getElementById(idCanvas);
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#555";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(mensagem, canvas.width / 2, canvas.height / 2);
+}
+
+
 const API_URL =
   window.location.hostname.includes("localhost") ||
   window.location.hostname.includes("127.0.0.1")
@@ -41,6 +54,8 @@ let chartInstance = null;
 
 // grafico pizza - Proporção por grupo muscular
 async function buscarDadosECriarGraficoPizza() {
+  mostrarMensagemCanvas("graficoPizza", "Carregando dados...");
+
   try {
     const token = localStorage.getItem("token");
 
@@ -185,6 +200,8 @@ function criarGraficoPizza(labels, valores, cores) {
 
 // grafico de linha - evolução de carga
 async function buscarDadosECriarGraficoLinha() {
+mostrarMensagemCanvas("graficoLinha", "Carregando dados...");
+
   try {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -367,6 +384,8 @@ function criarGraficoLinha(labels, datasets) {
 // Gráfico horizontal
 
 async function buscarDadosECriarGraficoHorizontal() {
+mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
+
   try {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -455,6 +474,8 @@ function criarGraficoHorizontal(labels, valores) {
 // Gráfico Radar
 
 async function buscarDadosECriarGraficoRadar() {
+mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
+
   try {
     const token = localStorage.getItem("token");
     if (!token) {

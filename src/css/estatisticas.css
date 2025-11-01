@@ -98,16 +98,25 @@ main {
 
 /* Responsividade*/
 
-@media (max-width: 900px) {
+@media (max-width: 992px) {
   .container-graficos {
     grid-template-columns: 1fr;
     gap: 20px;
+    align-items: center;
   }
 }
 
 @media (max-width: 420px) {
    .card-grafico h3{
       font-size: 14px;
+    }
+
+    main{
+      width: 90%;
+    }
+
+    .container-graficos{
+      width:
     }
 }
 

@@ -8,13 +8,34 @@ function gerarCores(qtd) {
   return cores;
 }
 
-const BASE_URL =
+const API_URL =
   window.location.hostname.includes("localhost") ||
   window.location.hostname.includes("127.0.0.1")
     ? "http://localhost:8080/api"
     : "https://gymflow-backend.up.railway.app/api";
 
-let modoGrafico = "carga";
+
+// autenticaçao 
+const PAGE_REDIRECT =
+  window.location.hostname.includes("localhost") ||
+  window.location.hostname.includes("127.0.0.1")
+    ? "/src/index.html"
+    : "../index.html";
+
+function verificarAutenticacao() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = PAGE_REDIRECT;
+    throw new Error("Acesso negado: usuário não nao autenticado.");
+  }
+
+  return token;
+}
+
+const token = verificarAutenticacao();
+
+
 let chartInstance = null;
 
 
@@ -44,7 +65,7 @@ async function buscarDadosECriarGraficoPizza() {
     }
 
     // busca todas as fichas do user
-    const respostaFichas = await fetch(`${BASE_URL}/fichas`, {
+    const respostaFichas = await fetch(`${API_URL}/fichas`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,7 +80,7 @@ async function buscarDadosECriarGraficoPizza() {
 
     const textoFichas = await respostaFichas.text();
     if (!textoFichas) {
-      console.warn("⚠ Nenhuma ficha retornada do servidor.");
+      console.warn(" Nenhuma ficha retornada do servidor.");
       return;
     }
 
@@ -81,7 +102,7 @@ async function buscarDadosECriarGraficoPizza() {
       const fichaId = ficha.idFicha || ficha.id;
 
       const respostaExercicios = await fetch(
-        `${BASE_URL}/fichas/exercicio?idFicha=${fichaId}`,
+        `${API_URL}/fichas/exercicio?idFicha=${fichaId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -172,7 +193,7 @@ async function buscarDadosECriarGraficoLinha() {
     }
 
     // busca todas as fichas do user 
-    const respostaFichas = await fetch(`${BASE_URL}/fichas`, {
+    const respostaFichas = await fetch(`${API_URL}/fichas`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -192,7 +213,7 @@ async function buscarDadosECriarGraficoLinha() {
     // em cada ficha busca os exercícios
     for (const ficha of fichas) {
       const respostaEx = await fetch(
-        `${BASE_URL}/fichas/exercicio?idFicha=${ficha.id}`,
+        `${API_URL}/fichas/exercicio?idFicha=${ficha.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (!respostaEx.ok) continue;
@@ -214,7 +235,7 @@ async function buscarDadosECriarGraficoLinha() {
     // em cada exercício busca suas séries registradas
     for (const exercicioId in exercicioMap) {
       const respostaSeries = await fetch(
-        `${BASE_URL}/series?exercicioFichaId=${exercicioId}`,
+        `${API_URL}/series?exercicioFichaId=${exercicioId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -343,6 +364,8 @@ function criarGraficoLinha(labels, datasets) {
   });
 }
 
+// Gráfico horizontal
+
 async function buscarDadosECriarGraficoHorizontal() {
   try {
     const token = localStorage.getItem("token");
@@ -352,7 +375,7 @@ async function buscarDadosECriarGraficoHorizontal() {
     }
 
     // Busca as séries (cada série tem data e duração de treino)
-    const respostaSeries = await fetch(`${BASE_URL}/series`, {
+    const respostaSeries = await fetch(`${API_URL}/series`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!respostaSeries.ok) throw new Error("Erro ao buscar séries.");
@@ -440,7 +463,7 @@ async function buscarDadosECriarGraficoRadar() {
     }
 
     // Buscar fichas do usuário
-    const respostaFichas = await fetch(`${BASE_URL}/fichas`, {
+    const respostaFichas = await fetch(`${API_URL}/fichas`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!respostaFichas.ok) throw new Error("Erro ao buscar fichas.");
@@ -451,7 +474,7 @@ async function buscarDadosECriarGraficoRadar() {
     const gruposMusculares = new Set();
 
     for (const ficha of fichas) {
-      const respostaEx = await fetch(`${BASE_URL}/fichas/exercicio?idFicha=${ficha.id}`, {
+      const respostaEx = await fetch(`${API_URL}/fichas/exercicio?idFicha=${ficha.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!respostaEx.ok) continue;

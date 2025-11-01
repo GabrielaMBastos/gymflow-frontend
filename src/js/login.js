@@ -45,7 +45,17 @@ async function login(event) {
 
     console.log("Login bem-sucedido. Token salvo:", data.token);
 
-    window.location.href = "/src/paginas/MenuPrincipal.html";
+    let caminhoMenu;
+
+    if (window.location.origin.includes("localhost") || 
+        window.location.origin.includes("127.0.0.1")) {
+        caminhoMenu = "/src/paginas/MenuPrincipal.html";
+    } else {
+        caminhoMenu = "../paginas/MenuPrincipal.html";
+    }
+
+window.location.href = caminhoMenu;
+
 
 } catch (err) {
     mostrarPopup("Erro de conexão com o servidor!");
@@ -88,11 +98,9 @@ async function redefinirSenha(event) {
         const data = await res.json();
 
         if (res.ok) {
-            // backend confirma que o email e nome existem e a senha foi redefinida
             mostrarPopup("Senha redefinida com sucesso!");
             fecharPopupSenha();
         } else {
-            // backend retornou erro - email/nome inválido 
             mostrarPopup(data.message || "Email ou nome inválidos!");
         }
 

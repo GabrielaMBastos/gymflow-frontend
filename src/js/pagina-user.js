@@ -1,6 +1,31 @@
+const API_URL =
+  window.location.hostname.includes("localhost") ||
+  window.location.hostname.includes("127.0.0.1")
+    ? "http://localhost:8080/api"
+    : "https://gymflow-backend.up.railway.app/api";
 
 
-/*document.addEventListener("DOMContentLoaded", async () => {
+// autenticaçao 
+const PAGE_REDIRECT =
+  window.location.hostname.includes("localhost") ||
+  window.location.hostname.includes("127.0.0.1")
+    ? "/src/index.html"
+    : "../index.html";
+
+function verificarAutenticacao() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    window.location.href = PAGE_REDIRECT;
+    throw new Error("Acesso negado: usuário não nao autenticado.");
+  }
+
+  return token;
+}
+
+const token = verificarAutenticacao();
+
+document.addEventListener("DOMContentLoaded", async () => {
   try {
     const usuario = await carregarUsuarioAPI();
     preencherCampos(usuario);
@@ -11,44 +36,32 @@
   }
 });
 
-// pegar token user nav
-function getToken() {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "/src/index.html"; 
-    throw new Error("Usuário não autenticado.");
-  }
-  return token;
-}*/
-
-
-// requisições - usuário
+// requisições user
 async function carregarUsuarioAPI() {
-  const res = await fetch("http://localhost:8080/api/----/---", {
-    headers: { Authorization: `Bearer ${getToken()}` }
+  const res = await fetch(`${API_URL}/usuarios/perfil`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
   });
   if (!res.ok) throw new Error("Falha ao obter usuário");
   return await res.json();
 }
 
 async function salvarUsuarioAPI(usuario) {
-  const res = await fetch("http://localhost:8080/api/----/----", {
+  const res = await fetch(`${API_URL}/usuarios/atualizar`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`
+      Authorization: `Bearer ${getToken()}`,
     },
-    body: JSON.stringify(usuario)
+    body: JSON.stringify(usuario),
   });
   if (!res.ok) throw new Error("Falha ao salvar usuário");
   return await res.json();
 }
 
-
-// requisições - metas
+// requisições metas
 async function carregarMetasAPI() {
-  const res = await fetch("http://localhost:8080/api/---", {
-    headers: { Authorization: `Bearer ${getToken()}` }
+  const res = await fetch(`${API_URL}/metas`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
   });
   if (!res.ok) throw new Error("Falha ao carregar metas");
 
@@ -57,42 +70,42 @@ async function carregarMetasAPI() {
 }
 
 async function criarMetaAPI(texto) {
-  const res = await fetch("http://localhost:8080/api/---", {
+  const res = await fetch(`${API_URL}/metas`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`
+      Authorization: `Bearer ${getToken()}`,
     },
-    body: JSON.stringify({ texto, concluida: false })
+    body: JSON.stringify({ texto, concluida: false }),
   });
   if (!res.ok) throw new Error("Erro ao criar meta");
   return await res.json();
 }
 
 async function atualizarMetaAPI(metaId, concluida) {
-  const res = await fetch(`http://localhost:8080/api/----/${metaId}`, {
+  const res = await fetch(`${API_URL}/metas/${metaId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${getToken()}`
+      Authorization: `Bearer ${getToken()}`,
     },
-    body: JSON.stringify({ concluida })
+    body: JSON.stringify({ concluida }),
   });
   if (!res.ok) throw new Error("Erro ao atualizar meta");
 }
 
 async function deletarMetaAPI(metaId) {
-  const res = await fetch(`http://localhost:8080/api/----/${metaId}`, {
+  const res = await fetch(`${API_URL}/metas/${metaId}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${getToken()}` }
+    headers: { Authorization: `Bearer ${getToken()}` },
   });
   if (!res.ok) throw new Error("Erro ao excluir meta");
 }
 
+
 function preencherCampos(usuario) {
   document.getElementById("name").value = usuario.nome || "";
   document.getElementById("email").value = usuario.email || "";
-  document.getElementById("senha").value = usuario.senha || "";
   document.getElementById("idadeValor").value = usuario.idade || "";
   document.getElementById("alturaValor").value = usuario.altura || "";
   document.getElementById("pesoValor").value = usuario.peso || "";
@@ -101,29 +114,31 @@ function preencherCampos(usuario) {
 
 function editar() {
   document.querySelector(".main-container").classList.add("edit-mode");
-  ["name", "email", "senha", "idadeValor", "alturaValor", "pesoValor"].forEach(id => {
-    document.getElementById(id).removeAttribute("readonly");
+  ["name", "email", "idadeValor", "alturaValor", "pesoValor"].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.removeAttribute("readonly");
+      input.style.pointerEvents = "auto";
+      input.style.backgroundColor = "white";
+      input.style.cursor = "text";
+    }
   });
 }
 
 async function salvar() {
   const nome = document.getElementById("name").value.trim();
-  const emailInput = document.getElementById("email");
-  const email = emailInput.value.trim();
-  const senha = document.getElementById("senha").value.trim();
+  const email = document.getElementById("email").value.trim();
   const idade = parseInt(document.getElementById("idadeValor").value);
   const altura = parseFloat(document.getElementById("alturaValor").value);
   const peso = parseFloat(document.getElementById("pesoValor").value);
 
-  // validações
   if (!nome) return mostrarPopup("Por favor, insira um nome válido.");
   if (!validarEmail(email)) return mostrarPopup("Por favor, insira um email válido.");
-  if (!senha || senha.length < 4) return mostrarPopup("A senha deve ter pelo menos 4 caracteres.");
   if (isNaN(idade) || idade <= 0) return mostrarPopup("Por favor, insira uma idade válida.");
-  if (isNaN(altura) || altura <= 0) return mostrarPopup("Por favor, insira uma altura válida (em cm).");
-  if (isNaN(peso) || peso <= 0) return mostrarPopup("Por favor, insira um peso válido (em kg).");
+  if (isNaN(altura) || altura <= 0) return mostrarPopup("Por favor, insira uma altura válida.");
+  if (isNaN(peso) || peso <= 0) return mostrarPopup("Por favor, insira um peso válido.");
 
-  const usuario = { nome, email, senha, idade, altura, peso };
+  const usuario = { nome, email, idade, altura, peso };
 
   try {
     await salvarUsuarioAPI(usuario);
@@ -134,8 +149,14 @@ async function salvar() {
     return;
   }
 
-  ["name", "email", "senha", "idadeValor", "alturaValor", "pesoValor"].forEach(id => {
-    document.getElementById(id).setAttribute("readonly", true);
+  ["name", "email", "idadeValor", "alturaValor", "pesoValor"].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.setAttribute("readonly", true);
+      input.style.pointerEvents = "none";
+      input.style.backgroundColor = "transparent";
+      input.style.cursor = "default";
+    }
   });
   document.querySelector(".main-container").classList.remove("edit-mode");
   atualizarIMC(peso, altura);
@@ -159,33 +180,35 @@ function classificarIMC(imc) {
 }
 
 function atualizarIMC(peso, altura) {
+  // calcula se os campos tiverem valores válidos
+  if (!peso || !altura || isNaN(peso) || isNaN(altura) || peso <= 0 || altura <= 0) {
+    document.getElementById("imcValor").textContent = "";
+    document.getElementById("imcClassificacao").textContent = "";
+    return;
+  }
+
   const imc = calcularIMC(peso, altura);
   const classificacao = classificarIMC(imc);
-  document.getElementById("imcValor").value = imc;
-  document.getElementById("imcClassificacao").value = classificacao;
+  document.getElementById("imcValor").textContent = imc;
+  document.getElementById("imcClassificacao").textContent = classificacao;
 }
 
-// email 
 function validarEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email.toLowerCase());
 }
 
-// popup
 function mostrarPopup(mensagem) {
   document.getElementById("popupMensagem").innerText = mensagem;
   document.getElementById("popupErro").style.display = "flex";
 }
-
 function fecharPopup() {
   document.getElementById("popupErro").style.display = "none";
 }
-
 function mostrarPopupSucesso(mensagem) {
   document.getElementById("popupMensagemSucesso").innerText = mensagem;
   document.getElementById("popupSucesso").style.display = "flex";
 }
-
 function fecharPopupSucesso() {
   document.getElementById("popupSucesso").style.display = "none";
 }
@@ -251,15 +274,8 @@ function criarItemMeta(texto, concluida = false, metaId = null) {
   listaMetas.appendChild(item);
 }
 
-// mostrar / ocultar senha 
-function viewSenha(){
-  var tipo = document.getElementById("senha")
-  if (tipo.type == "password") {
-    tipo.type = "text";
-  }else{
-    tipo.type = "password";
-  }
-}
+
+
 
 // menu lateral
 function openNav() {
@@ -272,6 +288,8 @@ function closeNav() {
 
 // sair
 function sair() {
+
+  localStorage.removeItem("token");
   window.location.href = "../index.html";
 }
 

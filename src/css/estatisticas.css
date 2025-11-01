@@ -104,6 +104,12 @@ main {
   }
 }
 
+@media (max-width: 420px) {
+   .card-grafico h3{
+      font-size: 14px;
+    }
+}
+
 
 /* Portrait mode todos e Landscape pequenos */
 @media (orientation: portrait), (max-width: 940px) and (orientation: landscape) {
@@ -173,6 +179,12 @@ main {
     top: 0;
     right: 25px;
     font-size: 2em;
+    }
+
+    /*--------------*/
+
+    .card-grafico h3{
+      font-size: 12px;
     }
 
 }

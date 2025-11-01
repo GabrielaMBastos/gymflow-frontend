@@ -295,7 +295,7 @@ body {
   .login-container {
     flex-direction: column;
     align-items: center;
-    margin: 2em;
+    margin: 1em 2em 2em 2em;
   }
 
   .login-container-left {

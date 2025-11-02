@@ -384,7 +384,7 @@ function criarGraficoLinha(labels, datasets) {
 // Gráfico horizontal
 
 async function buscarDadosECriarGraficoHorizontal() {
-mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
+  mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
 
   try {
     const token = localStorage.getItem("token");
@@ -393,37 +393,64 @@ mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
       return;
     }
 
-    // Busca as séries (cada série tem data e duração de treino)
-    const respostaSeries = await fetch(`${API_URL}/series`, {
+    // Busca todas as séries do usuário
+    const resposta = await fetch(`${API_URL}/series`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!respostaSeries.ok) throw new Error("Erro ao buscar séries.");
 
-    const series = await respostaSeries.json();
-
-    // Agrupa minutos totais por semana
-    const semanal = {};
-    for (const s of series) {
-      const data = new Date(s.data);
-      const semana = `${data.getFullYear()}-W${Math.ceil(data.getDate() / 7)}`;
-      const duracao = s.tempoTreinoMin || 30; // se o backend tiver duração, usa, senão simula 30min
-      semanal[semana] = (semanal[semana] || 0) + duracao;
+    if (!resposta.ok) {
+      throw new Error("Erro ao buscar séries.");
     }
 
-    const labels = Object.keys(semanal).sort();
-    const valores = Object.values(semanal);
+    const dados = await resposta.json();
+    const series = dados.series || [];
+
+    if (series.length === 0) {
+      mostrarMensagemCanvas("graficoHorizontal", "Nenhuma série encontrada.");
+      return;
+    }
+
+    // Agrupa as séries por semana e soma o volume (carga * repetições)
+    const volumeSemanal = {};
+
+    for (const s of series) {
+      const data = new Date(s.data);
+      if (isNaN(data)) continue;
+
+      // Calcula o número da semana no ano
+      const ano = data.getFullYear();
+      const semana = Math.ceil((data.getDate() + new Date(ano, data.getMonth(), 1).getDay()) / 7);
+      const chave = formatarSemana(data);
+
+      const carga = Number(s.carga) || 0;
+      const repeticoes = Number(s.repeticoes) || 0;
+      const volume = carga * repeticoes;
+
+      volumeSemanal[chave] = (volumeSemanal[chave] || 0) + volume;
+    }
+
+    const labels = Object.keys(volumeSemanal).sort();
+    const valores = Object.values(volumeSemanal).map((v) => Number(v.toFixed(2)));
 
     criarGraficoHorizontal(labels, valores);
   } catch (erro) {
     console.error("Erro ao criar gráfico horizontal:", erro);
+    mostrarMensagemCanvas("graficoHorizontal", "Erro ao carregar dados.");
   }
 }
 
 function criarGraficoHorizontal(labels, valores) {
-  const ctx = document.getElementById("graficoHorizontal").getContext("2d");
+  const canvas = document.getElementById("graficoHorizontal");
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    console.error("Canvas do gráfico horizontal não encontrado.");
+    return;
+  }
+
   const gradient = ctx.createLinearGradient(0, 0, 600, 0);
   gradient.addColorStop(0, "#1565C0");
-  gradient.addColorStop(1, "#121212");
+  gradient.addColorStop(1, "#43A047");
 
   new Chart(ctx, {
     type: "bar",
@@ -431,7 +458,7 @@ function criarGraficoHorizontal(labels, valores) {
       labels,
       datasets: [
         {
-          label: "Tempo de Treino (min)",
+          label: "Volume total por semana (kg × repetições)",
           data: valores,
           backgroundColor: gradient,
           borderRadius: 15,
@@ -444,9 +471,15 @@ function criarGraficoHorizontal(labels, valores) {
       responsive: true,
       plugins: {
         legend: { display: false },
+        title: {
+          display: true,
+          text: "",
+          font: { size: 16, family: "Montserrat" },
+          color: "#333",
+        },
         tooltip: {
           callbacks: {
-            label: (ctx) => `${ctx.parsed.x} minutos`,
+            label: (ctx) => `${ctx.parsed.x.toFixed(1)} kg totais`,
           },
         },
       },
@@ -455,14 +488,32 @@ function criarGraficoHorizontal(labels, valores) {
           beginAtZero: true,
           grid: { color: "rgba(200, 200, 200, 0.2)" },
           ticks: { color: "#333" },
+          title: { display: true, text: "Volume total (kg)", color: "#333" },
         },
         y: {
           grid: { display: false },
           ticks: { color: "#333" },
+          title: { display: true, text: "Semana", color: "#333" },
         },
       },
     },
   });
+}
+
+//Deixa mais legível
+function formatarSemana(data) {
+  const inicio = new Date(data);
+  const diaSemana = inicio.getDay(); // 0 = domingo
+  const diferenca = diaSemana === 0 ? 6 : diaSemana - 1; // segunda como início
+  inicio.setDate(inicio.getDate() - diferenca);
+
+  const fim = new Date(inicio);
+  fim.setDate(inicio.getDate() + 6);
+
+  const formatar = (d) =>
+    `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+
+  return `Semana ${formatar(inicio)} - ${formatar(fim)}`;
 }
 
 // Gráfico Radar

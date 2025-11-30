@@ -44,27 +44,29 @@
 
   <main>
     <div class="main-container">
-      <h1>Perfil do Usuário</h1>
 
-      <div class="infos-container">
-        <div class="left-side">
-          <h2>Dados Pessoais</h2>
-          <div class="left-section1">
+      <section class="section-infos">
+        <h2>Dados Pessoais</h2>
+        <div class="section-infos-top">
             <div class="info">
               <label for="name">Nome:</label>
               <input type="text" id="name" class="block" readonly />
             </div>
+            
             <div class="info">
               <label for="email">Email:</label>
               <input type="email" id="email" class="block" readonly />
             </div>
-          </div>
+        </div>
 
-          <div class="left-section2">
+        <div class="section-infos-bottom">
+          <div class="section-infos-bottom-valores">
             <div class="info">
-              <input id="idadeValor" type="number" readonly>
+              <input id="dataNascimento" type="date" style="display:none;" />
+              <input id="idadeValor" type="number" readonly />
               <p class="info-texto">Idade</p>
             </div>
+        
             <div class="info">
               <input id="alturaValor" type="number" readonly>
               <p class="info-texto">Altura (cm)</p>
@@ -73,36 +75,88 @@
               <input id="pesoValor" type="number" readonly>
               <p class="info-texto">Peso (kg)</p>
             </div>
+
             <div class="info">
               <div class="imc">
                 <p id="imcValor" class="imc-numero"></p>
                 <p id="imcClassificacao" class="imc-classificacao"></p>
               </div>
               <p class="info-texto">IMC</p>
-            </div>
+            </div> 
           </div>
-
           <div class="left-btns">
-            <button class="edit-btn" onclick="editar()">
-              <i class="fa-solid fa-pencil"></i>Editar
-            </button>
+            <button class="edit-btn" onclick="editar()">Editar</button>
             <button class="save-btn" onclick="salvar()">Salvar</button>
           </div>
+        
         </div>
+        
+      </section>
 
-        <div class="right-side">
-          <div class="right-section1">
-            <h2>Metas e Objetivos</h2>
-            <div class="add-meta">
-              <input type="text" id="novaMeta" placeholder="Digite uma nova meta" />
-              <button id="adicionarMeta">+</button>
-            </div>
-            <div id="listaMetas"></div>
+      
+      <section class="section-metas">
+        <h2>Cadastro Metas</h2>
+
+        <!-- Formulário completo -->
+        <div class="form-metas">
+          <span>
+            <label>Tipo Meta:</label>
+            <input id="metaTipo" type="text" placeholder="Tipo da meta (ex: Peso, Tempo exercício,)" />
+          </span>
+
+          <div class="linha-valor">
+            <span>
+              <label>Valor atual:</label>
+              <input id="metaAtual" type="number" placeholder="Valor atual" />
+            </span>
+            <span>
+              <label>Valor desejado:</label>
+              <input id="metaDesejado" type="number" placeholder="Valor desejado" />
+            </span>
+            
+            <span>
+              <label>Unidade:</label>
+              <select id="metaUnidade">
+                <option value="QUILOS">Quilos</option>
+                <option value="GRAMAS">Gramas</option>
+                <option value="LITROS">Litros</option>
+                <option value="MILILITROS">Mililitros</option>
+                <option value="REPETICOES">Repetições</option>
+                <option value="PORCENTAGEM">Porcentagem</option>
+                <option value="DIAS">Dias</option>
+                <option value="SEMANAS">Semanas</option>
+                <option value="MESES">Meses</option>
+                <option value="MINUTOS">Minutos</option>
+                <option value="SEGUNDOS">Segundos</option>
+                <option value="HORAS">Horas</option>
+              </select>
+            </span>
           </div>
 
-          <button class="btn-sair" onclick="sair()">Sair</button>
+          <div class="linha-final">
+            <div class="datas">
+              <span>
+                <label>Início:</label>
+                <input type="date" id="metaInicio" />
+              </span>
+              <span>
+                <label>Prazo:</label>
+                <input type="date" id="metaPrazo" />
+              </span>
+            </div>
+            
+            <button id="btnAdicionarMeta" class="btnAdd">Criar Meta</button>
+          </div>
         </div>
-      </div>
+
+        <!-- lista de metas -->
+        <h2>Minhas metas:</h2>
+        <div id="listaMetas" class="lista-metas">
+        </div>
+      </section>
+
+        <button class="btn-sair" onclick="sair()">Sair</button>
+      
 
       <!-- Popup Erro -->
       <div id="popupErro" class="popup">

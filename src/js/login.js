@@ -4,6 +4,22 @@ const API_URL =
       ? "http://localhost:8080/api/usuarios/login"
       : "https://gymflow-backend.up.railway.app/api/usuarios/login";
 
+      const token = localStorage.getItem("token");
+if (token) {
+  // Usuário já está logado → manda pro menu
+  let caminhoMenu;
+  
+  if (window.location.origin.includes("localhost") || 
+      window.location.origin.includes("127.0.0.1")) {
+    caminhoMenu = "/src/paginas/MenuPrincipal.html";
+  } else {
+    caminhoMenu = "../paginas/MenuPrincipal.html";
+  }
+
+  window.location.href = caminhoMenu;
+}
+
+
 
 async function login(event) {
     event.preventDefault();
@@ -35,8 +51,8 @@ async function login(event) {
         return;
     }
 
-    // limpa dados antigos do localStorage
-    localStorage.clear();
+    // remove apenas o token antigo se existir
+    localStorage.removeItem("token");
 
     // salva o token
     if (data.token) {
@@ -61,53 +77,6 @@ window.location.href = caminhoMenu;
     mostrarPopup("Erro de conexão com o servidor!");
     console.error(err);
 }
-}
-
-// redefinir senha
-async function redefinirSenha(event) {
-    event.preventDefault();
-
-    const nome = document.getElementById("resetNome").value.trim();
-    const email = document.getElementById("resetEmail").value.trim();
-    const novaSenha = document.getElementById("novaSenha").value.trim();
-
-    // validaçoes
-    if (!nome || !email || !novaSenha) {
-        mostrarPopup("Preencha todos os campos!");
-        return;
-    }
-
-    if (!validarEmail(email)) {
-        mostrarPopup("Email inválido!");
-        return;
-    }
-
-    if (novaSenha.length < 4) {
-        mostrarPopup("A senha deve ter pelo menos 4 caracteres.");
-        return;
-    }
-
-    
-    try{
-        const res = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome, email, senha: novaSenha }),
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            mostrarPopup("Senha redefinida com sucesso!");
-            fecharPopupSenha();
-        } else {
-            mostrarPopup(data.message || "Email ou nome inválidos!");
-        }
-
-    } catch (err) {
-        mostrarPopup("Erro de conexão com o servidor!");
-        console.error(err);
-    }
 }
 
 function validarEmail(email) {

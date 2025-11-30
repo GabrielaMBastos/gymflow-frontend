@@ -100,23 +100,6 @@ body {
   color: #616161;
 }
 
-/* ESQUECEU SENHA  */
-.link-senha {
-  background: none;
-  border: none;
-  color: #1565c0;
-  text-decoration: none;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 0.5em;
-  padding: 0;
-}
-
-.link-senha:hover {
-  color: #0d47a1;
-}
-/**/
-
 .btn-login {
   padding: 1em;
   width: 100%;
@@ -202,10 +185,6 @@ body {
 
 .popup-conteudo button[type="button"] {
   background: #aaa;
-}
-
-#popupSenha {
-  z-index: 10;
 }
 
 #popupErro {

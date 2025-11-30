@@ -34,9 +34,6 @@
                         <i class="fa-regular fa-eye" onclick="viewSenha()" ></i>
                     </div>
                 </div>
-                <button type="button" class="link-senha" onclick="abrirPopup('popupSenha')">
-                    Esqueceu a senha?
-                </button>
                 <input class="btn-login" type="submit" value="LOGIN">
             </form>
             <div class="cadastro">
@@ -51,22 +48,6 @@
         <div class="popup-conteudo">
             <p id="popupMensagem"></p>
             <button onclick="fecharPopup()">Ok</button>
-        </div>
-    </div>
-
-    <!-- Popup redefinir senha -->
-    <div id="popupSenha" class="popup">
-        <div class="popup-conteudo">
-            <h3>Redefinir Senha</h3>
-            <form id="formRedefinirSenha" onsubmit="redefinirSenha(event)">
-                <input type="text" id="resetNome" placeholder="Seu nome cadastrado">
-                <input type="text" id="resetEmail" placeholder="Seu email cadastrado">
-                <input type="password" id="novaSenha" placeholder="Digite a nova senha">
-                <div>
-                <button type="submit">Redefinir</button>
-                <button type="button" onclick="fecharPopupSenha()">Cancelar</button>
-                </div>
-            </form>
         </div>
     </div>
     

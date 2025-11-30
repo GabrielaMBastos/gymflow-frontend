@@ -35,16 +35,19 @@
             <div class="organize-treinos">Organize seus treinos,</div>
             <h4>acompanhe sua evolução diariamente!</h4>
         </div>
+
         <br>
-        <div></div> <button class="topo">Mostre Minha Evolução</button>
+
+        <button class="topo">Mostre Minha Evolução</button>
         <br>
         <button class="topo">Melhore seu desempenho</button>
         <br>
         <button class="topo">Cadastre suas informações</button>
         <br>
     </div>
+
     <img class="logo-img-grande" src="../assets/logo.png">
-    </div>
+
 
     <div class="quadro-de-imagens">
 
@@ -74,43 +77,52 @@
         </div>
     </div>
 
-    <div class="criar-e-editar-ficha">
-        <div class="organize-treinos">Crie sua ficha</div>
-        <div>
-            <h4>da forma que quiser</h4>
+   <div class="criar-e-editar-ficha">
+    <div class="organize-treinos">Crie sua ficha</div>
+    <h4>da forma que quiser</h4>
+</div>
+
+<div class="cadastro-de-treinos">
+
+    <form id="formFicha" action="">
+        <h1>Cadastro de Ficha</h1>
+
+        <div class="tab"><h4>Treino:</h4>
+            <p><input placeholder="Nome do treino..." oninput="this.className = ''"></p>
+            <p><input placeholder="Data de início..." oninput="this.className = ''"></p>
+            <p><input placeholder="Data de Finalização..." oninput="this.className = ''"></p>
         </div>
-        <div>
-            <button class="invisivel" id="openModalBtn"></button>
 
-            <div class="modal" id="textModal">
+        <div class="tab"><h4>Ficha:</h4>
+            <p><input placeholder="Dia da semana..." oninput="this.className = ''"></p>
+        </div>
 
-                <div class="modal-content">
-                    <span class="close" id="closeModal">&times;</span>
+        <div class="tab"><h4>Exercício:</h4>
+            <p><input placeholder="Nome..." oninput="this.className = ''"></p>
+            <p><input placeholder="Grupo muscular..." oninput="this.className = ''"></p>
+            <p><input placeholder="Equipamento..." oninput="this.className = ''"></p>
+        </div>
 
-                    <div id="treinos"></div>
+        <div class="tab"><h4>Séries:</h4>
+            <p><input placeholder="Data..." oninput="this.className = ''"></p>
+            <p><input placeholder="Carga..." oninput="this.className = ''"></p>
+            <p><input placeholder="Repetições..." oninput="this.className = ''"></p>
+        </div>
 
-                    <button class="add-treino-btn" onclick="criarTreino()">+ Criar Novo Treino</button>
-
-                </div>
+        <div style="overflow:auto;">
+            <div style="float:right;">
+                <button class="botao-ficha" type="button" id="prevBtn" onclick="nextPrev(-1)">Anterior</button>
+                <button class="botao-ficha" type="button" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
             </div>
         </div>
-    </div>
-    <div class="separacao-fichas">
 
-        <div class="treinos">
-            <div class="fichas" id="treino1"></div>
-            <div id="listaTreinos1"></div>
+        <div style="text-align:center;margin-top:40px;">
+            <span class="step"></span>
+            <span class="step"></span>
+            <span class="step"></span>
+            <span class="step"></span>
         </div>
+    </form>
 
-        <div class="treinos">
-            <div class="fichas" id="treino2"></div>
-            <div id="listaTreinos2"></div>
-        </div>
-
-        <div class="treinos">
-            <div class="fichas" id="treino3"></div>
-            <div id="listaTreinos3"></div>
-        </div>
-    </div>
-
+</div>
 </body>

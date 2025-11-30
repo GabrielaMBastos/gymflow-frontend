@@ -1,125 +1,160 @@
-const modal = document.getElementById("textModal");
-const openBtn = document.getElementById("openModalBtn");
-const closeBtn = document.getElementById("closeModal");
+const BASE_URL = "https://gymflow-backend.up.railway.app/api";
 
-openBtn.onclick = () => modal.style.display = "flex";
-closeBtn.onclick = () => modal.style.display = "none";
-window.onclick = (event) => {
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
-};
+let currentTab = 0;
+document.addEventListener("DOMContentLoaded", () => {
+  showTab(currentTab);
+});
 
-let treinoGlobalId = 0;
+function showTab(n) {
+  const tabs = document.getElementsByClassName("tab");
 
-function inicializarArea(areaId) {
-  const container = document.getElementById("treino" + areaId);
+  tabs[n].style.display = "block";
 
-  const input = document.createElement("input");
-  input.type = "text";
-  input.maxLength = 30;
-  input.placeholder = "Digite o nome da ficha";
-  input.id = "novoTreinoNome-" + areaId;
-  input.classList.add("texto-ficha")
+  document.getElementById("prevBtn").style.display = (n === 0 ? "none" : "inline");
+  document.getElementById("nextBtn").innerHTML = (n === tabs.length - 1 ? "Enviar" : "Próximo");
 
-  const btn = document.createElement("button");
-  btn.textContent = "Adicionar ficha";
-  btn.onclick = () => addTreino(areaId);
-  btn.classList.add("topo1");
-
-  container.appendChild(input);
-  container.appendChild(btn);
+  fixStepIndicator(n);
 }
 
-function addTreino(areaId) {
-  const input = document.getElementById("novoTreinoNome-" + areaId);
-  const nome = input.value.trim();
+function nextPrev(n) {
+  const tabs = document.getElementsByClassName("tab");
 
-  if (nome === "") {
-    alert("Digite a ficha que deseja adicionar");
+  if (n === 1 && !validateForm()) return false;
+
+  tabs[currentTab].style.display = "none";
+  currentTab += n;
+
+  if (currentTab >= tabs.length) {
+    enviarFichaParaAPI();
+    return false;
+  }
+
+  showTab(currentTab);
+}
+
+function validateForm() {
+  let valid = true;
+  const inputs = document.getElementsByClassName("tab")[currentTab]
+    .getElementsByTagName("input");
+
+  for (let input of inputs) {
+    input.classList.remove("invalid");
+
+    if (input.value.trim() === "") {
+      input.classList.add("invalid");
+      valid = false;
+    }
+  }
+
+  if (valid) {
+    document.getElementsByClassName("step")[currentTab].classList.add("finish");
+  }
+
+  return valid;
+}
+
+function fixStepIndicator(n) {
+  const steps = document.getElementsByClassName("step");
+  for (let step of steps) step.classList.remove("active");
+  steps[n].classList.add("active");
+}
+
+async function enviarFichaParaAPI() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Token não encontrado. Faça login novamente.");
     return;
   }
 
-  treinoGlobalId++;
+  const tabs = document.getElementsByClassName("tab");
 
-  const listaTreinos = document.getElementById("listaTreinos" + areaId);
+  // Captura dos valores
+  const fichaNome = tabs[0].querySelectorAll("input")[0].value;
+  const dataInicio = tabs[0].querySelectorAll("input")[1].value;
+  const dataFim = tabs[0].querySelectorAll("input")[2].value;
+  const diaSemana = tabs[1].querySelectorAll("input")[0].value;
 
-  const item = document.createElement("div");
-  item.className = "treino-item";
-  item.style.cursor = "pointer";
+  const exercicioNome = tabs[2].querySelectorAll("input")[0].value;
+  const grupoMuscular = tabs[2].querySelectorAll("input")[1].value;
+  const equipamento = tabs[2].querySelectorAll("input")[2].value;
 
-  const treino = document.createElement("div");
-  treino.className = "treino";
-  treino.id = "treino-" + treinoGlobalId;
-  treino.innerHTML = `
-    <h4>${nome}</h4>
-    <div class="input-area">
-      <input type="text" id="textInput-${treinoGlobalId}" maxlength="50" placeholder="Adicionar Exercício">
-      <button class="botao-ficha2" onclick="addTexto(${treinoGlobalId})">Adicionar</button>
-    </div>
-    <div class="texto-exercicio" id="textList-${treinoGlobalId}"></div>
-  `;
+  const serieData = tabs[3].querySelectorAll("input")[0].value;
+  const carga = Number(tabs[3].querySelectorAll("input")[1].value);
+  const repeticoes = Number(tabs[3].querySelectorAll("input")[2].value);
 
-  item.onclick = () => {
-    document.getElementById("treino-" + treinoGlobalId).scrollIntoView({ behavior: "smooth" });
-  };
+  try {
+    /************ 1) Criar Ficha ************/
+    const fichaResp = await fetch(`${BASE_URL}/fichas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        nomeFicha: fichaNome,
+        dataCriacao: dataInicio,
+        dataFinal: dataFim,
+        diaSemana: diaSemana,
+      }),
+    });
 
-  const removeBtn = document.createElement("button");
-  removeBtn.textContent = "Remover ficha";
-  removeBtn.classList.add("botao-remover");
-  removeBtn.onclick = () => {
-    item.remove();
-    treino.remove();
-  };
+    if (!fichaResp.ok) throw new Error("Erro ao criar ficha");
 
-  treino.appendChild(removeBtn);
+    const ficha = await fichaResp.json();
+    const idFicha = ficha.idFicha || ficha.id;
 
-  listaTreinos.appendChild(item);
-  document.getElementById("treino" + areaId).appendChild(treino);
+    /************ 2) Criar Exercício ************/
+    const exercicioResp = await fetch(`${BASE_URL}/fichas/exercicio`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        idFicha: idFicha,
+        nome: exercicioNome,
+        grupoMuscular: grupoMuscular,
+        equipamento: equipamento,
+      }),
+    });
 
-  input.value = "";
+    if (!exercicioResp.ok) throw new Error("Erro ao criar exercício");
+
+    const exercicio = await exercicioResp.json();
+    const exercicioFichaId = exercicio.exercicioFichaId || exercicio.id;
+
+    /************ 3) Criar Série ************/
+    const serieResp = await fetch(`${BASE_URL}/series`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        exercicioFichaId: exercicioFichaId,
+        data: serieData,
+        carga: carga,
+        repeticoes: repeticoes,
+        tempoTreinoMin: 30,
+      }),
+    });
+
+    if (!serieResp.ok) throw new Error("Erro ao criar série");
+
+    alert("Ficha cadastrada com sucesso!");
+    window.location.reload();
+
+  } catch (erro) {
+    console.error("Erro ao enviar dados:", erro);
+    alert("Erro ao registrar ficha. Verifique o console.");
+  }
 }
 
-function addTexto(id) {
-  const input = document.getElementById("textInput-" + id);
-  const list = document.getElementById("textList-" + id);
-  const text = input.value.trim();
-
-  if (text === "") {
-    alert("Treino não adicionado!");
-    return;
-  }
-
-  const item = document.createElement("div");
-  item.className = "text-item";
-
-  const span = document.createElement("span");
-  span.textContent = text;
-
-  const removeBtn = document.createElement("button");
-  removeBtn.className = "remove-btn";
-  removeBtn.textContent = " x ";
-  removeBtn.classList.add("botao-remover2")
-  removeBtn.onclick = () => item.remove();
-
-  item.appendChild(span);
-  item.appendChild(removeBtn);
-  list.appendChild(item);
-
-  input.value = "";
+function openNav() {
+  document.getElementById("navSide").style.width = "250px";
 }
 
-window.onload = () => {
-  inicializarArea(1);
-  inicializarArea(2);
-  inicializarArea(3);
-};
-
-function toggleTreinos(id) {
-  const bloco = document.getElementById(id);
-  if (bloco.style.display === "none") {
-    bloco.style.display = "block";
-  } else {
-    bloco.style.display = "none";
-  }
+function closeNav() {
+  document.getElementById("navSide").style.width = "0";
 }

@@ -212,9 +212,8 @@ h2{
 }
 
 
-/*============================
-   MODO EDIÇÃO — DESTACADO
-============================ */
+
+/*modo edição */
 
 .section-infos.edit-mode input:not([readonly]) {
     color: #000 !important;
@@ -312,9 +311,7 @@ input[type="number"] {
     opacity: 1;
 }
 
-/* =========================
-   LISTA DE METAS — NOVO ESTILO
-   ========================= */
+/* lista mets*/
 
 .lista-metas {
     margin-top: 0.5em;
@@ -331,7 +328,7 @@ input[type="number"] {
     border-radius: 14px;
     padding: 18px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    border-left: 6px solid #1565C0; /* destaque */
+    border-left: 6px solid #f44c44; /* destaque */
     transition: 0.2s ease;
     cursor: pointer;
 }
@@ -353,7 +350,6 @@ input[type="number"] {
     color: #444;
 }
 
-/* ÁREA EXPANDIDA */
 .meta-details {
     margin-top: 10px;
     padding: 12px;
@@ -480,10 +476,36 @@ input[type="number"] {
     }
 }
 
+@media (max-width: 730px){
+    .form-metas .linha-valor, .linha-final {
+    flex-direction: column;
+    gap: 1em;
+}
+
+.section-infos-top {
+    display: flex;
+    flex-direction: column;
+}
+
+.imc{
+        flex-direction: column;
+        width: 90%;
+        padding: 1.5em 0.8em;
+    }
+    
+
+}
+
 @media (max-width: 420px){
     .imc{
-        flex-direction: column;
+        padding: 1em 0.5em;
     }
+
+    .datas {
+    flex-direction: column;
+    gap:1em;
+}
+
 }
 
 /* Portrait + landscape pequenos */

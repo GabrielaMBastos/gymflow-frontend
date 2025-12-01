@@ -498,7 +498,7 @@ input[type="number"] {
 
 @media (max-width: 420px){
     .imc{
-        padding: 1em 0.5em;
+        padding: 0.8em;
     }
 
     .datas {
@@ -506,6 +506,14 @@ input[type="number"] {
     gap:1em;
 }
 
+#dataNascimento {
+    font-size: 16px;
+    width: 80%;
+}
+
+#idadeValor, #alturaValor, #pesoValor, #imcValor {
+    font-size: 20px;
+}
 }
 
 /* Portrait + landscape pequenos */
@@ -599,10 +607,6 @@ input[type="number"] {
         flex-direction: column;
     }
 
-    .right-side {
-        border-left: none;
-        padding-left: 0;
-    }
 
     .btn-sair, .edit-btn, .save-btn{
         padding: 0.8em 1em;

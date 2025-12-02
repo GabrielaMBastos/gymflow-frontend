@@ -1,32 +1,42 @@
+
 // config
-const API_BASE_URL = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.0.0.1")
-  ? "http://localhost:8080/api"
-  : "https://gymflow-backend.up.railway.app/api";
+const API_BASE_URL =
+  window.location.hostname.includes("localhost") ||
+  window.location.hostname.includes("127.0.0.1")
+    ? "http://localhost:8080/api"
+    : "https://gymflow-backend.up.railway.app/api";
 
-
-// autenticaçao
 const PAGE_REDIRECT =
   window.location.hostname.includes("localhost") ||
   window.location.hostname.includes("127.0.0.1")
     ? "/src/index.html"
     : "../index.html";
 
-function verificarAutenticacao() {
-  const token = localStorage.getItem("token");
 
-  if (!token) {
-    window.location.href = PAGE_REDIRECT;
-    throw new Error("Acesso negado: usuário não autenticado.");
+// token - expiração e autenticaçao
+function tokenExpirado(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    const agora = Math.floor(Date.now() / 1000);
+    return payload.exp && payload.exp < agora;
+  } catch (e) {
+    console.error("Erro ao decodificar token", e);
+    return true;
   }
-
-  return token;
 }
 
-// token
+function protegerPagina() {
+  const token = localStorage.getItem("token");
+  if (!token || tokenExpirado(token)) {
+    localStorage.removeItem("token");
+    window.location.href = PAGE_REDIRECT;
+    throw new Error("Token expirado ou inválido.");
+  }
+}
+
 function getUserIdFromToken() {
   const token = localStorage.getItem("token");
   if (!token) return null;
-
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.idUser;
@@ -36,8 +46,32 @@ function getUserIdFromToken() {
   }
 }
 
+async function fetchComToken(url, options = {}) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    sair();
+    return null;
+  }
 
-//popup
+  options.headers = {
+    ...options.headers,
+    Authorization: `Bearer ${token}`,
+  };
+
+  const res = await fetch(url, options);
+
+  if (res.status === 401) {
+    if (tokenExpirado(token)) {
+      sair();
+      return null;
+    }
+  }
+
+  return res;
+}
+
+
+// popups
 function abrirPopupErro(msg) {
   document.getElementById("popupMensagem").textContent = msg;
   document.getElementById("popupErro").style.display = "flex";
@@ -45,7 +79,6 @@ function abrirPopupErro(msg) {
 function fecharPopup() {
   document.getElementById("popupErro").style.display = "none";
 }
-
 function abrirPopupSucesso(msg) {
   document.getElementById("popupMensagemSucesso").textContent = msg;
   document.getElementById("popupSucesso").style.display = "flex";
@@ -54,35 +87,32 @@ function fecharPopupSucesso() {
   document.getElementById("popupSucesso").style.display = "none";
 }
 
-// carregar user
+
+// carregar dados do usuário
 async function carregarUsuarioAPI() {
   try {
-    const token = localStorage.getItem("token");
     const userId = getUserIdFromToken();
-    if (!token || !userId) return;
+    if (!userId) return;
 
-    const response = await fetch(`${API_BASE_URL}/usuarios?idUsuario=${userId}`, {
-      method: "GET",
-      headers: { 
-        "Authorization": `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) return;
+    const response = await fetchComToken(`${API_BASE_URL}/usuarios?idUsuario=${userId}`);
+    if (!response || !response.ok) return;
 
     const dados = await response.json();
     window.dadosUsuario = dados;
 
     document.getElementById("name").value = dados.nome;
     document.getElementById("email").value = dados.email;
-    document.getElementById("pesoValor").value = dados.peso;
-    document.getElementById("alturaValor").value = dados.altura;
+    document.getElementById("pesoValor") && (document.getElementById("pesoValor").value = dados.peso);
+    document.getElementById("alturaValor") && (document.getElementById("alturaValor").value = dados.altura);
 
     window.dataNascimentoAtual = dados.dataNascimento;
 
-    document.getElementById("idadeValor").type = "text";
-    document.getElementById("idadeValor").value = dados.idade ?? "-";
-    document.getElementById("idadeValor").style.display = "inline-block";
+    const idadeEl = document.getElementById("idadeValor");
+    if (idadeEl) {
+      idadeEl.type = "text";
+      idadeEl.value = dados.idade ?? "-";
+      idadeEl.style.display = "inline-block";
+    }
 
     document.getElementById("dataNascimento").value = dados.dataNascimento;
 
@@ -93,24 +123,26 @@ async function carregarUsuarioAPI() {
   }
 }
 
-// editar/salvar
+
+// editar/salvar dados
 function editar() {
   const sectionInfos = document.querySelector(".section-infos");
   sectionInfos.classList.add("edit-mode");
 
   const campos = ["name", "pesoValor", "alturaValor", "dataNascimento"];
-  campos.forEach(id => {
+  campos.forEach((id) => {
     const campo = document.getElementById(id);
-    campo.removeAttribute("readonly");
-    campo.disabled = false;
+    if (campo) {
+      campo.removeAttribute("readonly");
+      campo.disabled = false;
+    }
   });
 
   const email = document.getElementById("email");
-  email.setAttribute("readonly", true);
-  email.disabled = true;
+  if (email) { email.setAttribute("readonly", true); email.disabled = true; }
 
-  document.getElementById("idadeValor").style.display = "none";
-  document.getElementById("dataNascimento").style.display = "inline-block";
+  document.getElementById("idadeValor") && (document.getElementById("idadeValor").style.display = "none");
+  document.getElementById("dataNascimento") && (document.getElementById("dataNascimento").style.display = "inline-block");
 }
 
 function desabilitarCampos() {
@@ -118,47 +150,43 @@ function desabilitarCampos() {
   sectionInfos.classList.remove("edit-mode");
 
   const campos = ["name", "pesoValor", "alturaValor"];
-  campos.forEach(id => {
+  campos.forEach((id) => {
     const campo = document.getElementById(id);
-    campo.setAttribute("readonly", true);
-    campo.disabled = true;
+    if (campo) {
+      campo.setAttribute("readonly", true);
+      campo.disabled = true;
+    }
   });
 
   const email = document.getElementById("email");
-  email.setAttribute("readonly", true);
-  email.disabled = true;
+  if (email) { email.setAttribute("readonly", true); email.disabled = true; }
 
-  document.getElementById("dataNascimento").style.display = "none";
-  document.getElementById("idadeValor").style.display = "inline-block";
+  document.getElementById("dataNascimento") && (document.getElementById("dataNascimento").style.display = "none");
+  document.getElementById("idadeValor") && (document.getElementById("idadeValor").style.display = "inline-block");
 }
 
 async function salvar() {
   try {
-    const token = localStorage.getItem("token");
     const userId = getUserIdFromToken();
-
     const dataNascimentoInput = document.getElementById("dataNascimento");
-    if (dataNascimentoInput.style.display !== "none") {
+    if (dataNascimentoInput && dataNascimentoInput.style.display !== "none") {
       window.dataNascimentoAtual = dataNascimentoInput.value;
     }
 
     const body = {
       nome: document.getElementById("name").value,
-      peso: parseFloat(document.getElementById("pesoValor").value),
-      altura: parseFloat(document.getElementById("alturaValor").value),
-      dataNascimento: window.dataNascimentoAtual
+      peso: parseFloat(document.getElementById("pesoValor")?.value || 0),
+      altura: parseFloat(document.getElementById("alturaValor")?.value || 0),
+      dataNascimento: window.dataNascimentoAtual,
     };
 
-    const response = await fetch(`${API_BASE_URL}/usuarios/${userId}`, {
+    const response = await fetchComToken(`${API_BASE_URL}/usuarios/${userId}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(body)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
 
-    if (!response.ok) {
+    if (!response || !response.ok) {
       abrirPopupErro("Erro ao salvar.");
       return;
     }
@@ -173,8 +201,8 @@ async function salvar() {
 
 // IMC
 function calcularIMC() {
-  const peso = parseFloat(document.getElementById("pesoValor").value);
-  const altura = parseFloat(document.getElementById("alturaValor").value);
+  const peso = parseFloat(document.getElementById("pesoValor")?.value || 0);
+  const altura = parseFloat(document.getElementById("alturaValor")?.value || 0);
 
   if (!peso || !altura) return;
 
@@ -190,68 +218,136 @@ function calcularIMC() {
   document.getElementById("imcClassificacao").textContent = c;
 }
 
-// sair
-function sair() {
-  localStorage.removeItem("token");
-  window.location.href = "../index.html";
+
+// modal criar e editar metas
+const listaMetas = document.getElementById("listaMetas");
+let metaEditandoId = null;
+
+function abrirModalMeta(tipo, meta = null) {
+  const modal = document.getElementById("modalMeta");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  if (tipo === "criar") {
+    metaEditandoId = null;
+    document.getElementById("modalMetaTitulo").textContent = "Criar Meta";
+    limparCamposMeta();
+    document.getElementById("btnModalMeta").textContent = "Criar Meta";
+  } else if (tipo === "editar" && meta) {
+    metaEditandoId = meta.id;
+    document.getElementById("modalMetaTitulo").textContent = "Editar Meta";
+    document.getElementById("metaId").value = meta.id;
+    document.getElementById("metaTipo").value = meta.tipo;
+    document.getElementById("metaAtual").value = meta.atual;
+    document.getElementById("metaDesejado").value = meta.desejado;
+    document.getElementById("metaUnidade").value = meta.unidadeDeMedida;
+    document.getElementById("metaInicio").value = meta.inicio;
+    document.getElementById("metaPrazo").value = meta.prazo;
+    document.getElementById("btnModalMeta").textContent = "Salvar Alterações";
+  }
 }
 
-// metas
-const listaMetas = document.getElementById("listaMetas");
+function fecharModalMeta() {
+  const modal = document.getElementById("modalMeta");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  limparCamposMeta();
+  metaEditandoId = null;
+}
 
-const camposMeta = {
-  tipo: document.getElementById("metaTipo"),
-  atual: document.getElementById("metaAtual"),
-  desejado: document.getElementById("metaDesejado"),
-  unidade: document.getElementById("metaUnidade"),
-  inicio: document.getElementById("metaInicio"),
-  prazo: document.getElementById("metaPrazo")
-};
+function limparCamposMeta() {
+  document.getElementById("metaId").value = "";
+  document.getElementById("metaTipo").value = "";
+  document.getElementById("metaAtual").value = "";
+  document.getElementById("metaDesejado").value = "";
+  document.getElementById("metaUnidade").value = "QUILOS";
+  document.getElementById("metaInicio").value = "";
+  document.getElementById("metaPrazo").value = "";
+}
 
-// carregar metas
-async function carregarMetas() {
-  const token = localStorage.getItem("token");
+async function salvarModalMeta() {
   const userId = getUserIdFromToken();
 
-  try {
-    const res = await fetch(`${API_BASE_URL}/usuarios/${userId}/metas`, {
-      headers: { 
-        "Authorization": `Bearer ${token}`
-      }
-    });
+  // validações
+  if (!document.getElementById("metaTipo").value.trim()) return abrirPopupErro("Tipo obrigatório.");
+  if (!document.getElementById("metaAtual").value) return abrirPopupErro("Informe o valor atual.");
+  if (!document.getElementById("metaDesejado").value) return abrirPopupErro("Informe o desejado.");
+  if (!document.getElementById("metaUnidade").value) return abrirPopupErro("Selecione unidade.");
+  if (!document.getElementById("metaInicio").value) return abrirPopupErro("Selecione início.");
+  if (!document.getElementById("metaPrazo").value) return abrirPopupErro("Selecione prazo.");
 
-    if (!res.ok) {
+  const body = {
+    tipo: document.getElementById("metaTipo").value,
+    atual: Number(document.getElementById("metaAtual").value),
+    desejado: Number(document.getElementById("metaDesejado").value),
+    unidadeDeMedida: document.getElementById("metaUnidade").value,
+    inicio: document.getElementById("metaInicio").value,
+    prazo: document.getElementById("metaPrazo").value,
+  };
+
+  try {
+    let res;
+    if (metaEditandoId) {
+      res = await fetchComToken(`${API_BASE_URL}/usuarios/metas/${metaEditandoId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res || !res.ok) return abrirPopupErro("Erro ao atualizar meta.");
+      abrirPopupSucesso("Meta atualizada!");
+    } else {
+      res = await fetchComToken(`${API_BASE_URL}/usuarios/${userId}/metas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res || !res.ok) return abrirPopupErro("Erro ao cadastrar meta.");
+      abrirPopupSucesso("Meta cadastrada!");
+    }
+
+    fecharModalMeta();
+    carregarMetas();
+  } catch (e) {
+    console.error(e);
+    abrirPopupErro("Erro inesperado.");
+  }
+}
+
+async function carregarMetas() {
+  const userId = getUserIdFromToken();
+  if (!userId) return;
+
+  try {
+    const res = await fetchComToken(`${API_BASE_URL}/usuarios/${userId}/metas`);
+    if (!res || !res.ok) {
       listaMetas.innerHTML = "<p>Nenhuma meta cadastrada.</p>";
       return;
     }
 
     const data = await res.json();
     renderizarMetas(data.metas || []);
-
   } catch (e) {
     console.error(e);
     listaMetas.innerHTML = "<p>Erro ao carregar metas.</p>";
   }
 }
 
-// renderizar lista
 function renderizarMetas(metas) {
   listaMetas.innerHTML = "";
 
-  // Mapa de unidades para símbolos
   const unidadesSimbolo = {
     GRAMAS: "g",
     QUILOS: "kg",
     LITROS: "L",
     MILILITROS: "ml",
-    REPETICOES: "x",
+    REPETICOES: "reps",
     PORCENTAGEM: "%",
     DIAS: "dias",
     SEMANAS: "semanas",
     MESES: "meses",
     MINUTOS: "min",
     SEGUNDOS: "s",
-    HORAS: "h"
+    HORAS: "h",
   };
 
   metas.forEach((meta, index) => {
@@ -262,101 +358,53 @@ function renderizarMetas(metas) {
 
     card.innerHTML = `
       <p class="meta-card-title">Meta ${index + 1}: ${meta.tipo}</p>
-      <p class="meta-card-info">
-        Progresso: ${meta.atual} → ${meta.desejado}${simbolo}
-      </p>
-
+      <p class="meta-card-info">Progresso: ${meta.atual} → ${meta.desejado}${simbolo}</p>
       <div class="meta-details" id="meta-${index}">
         <p><strong>Tipo:</strong> ${meta.tipo}</p>
         <p><strong>Atual:</strong> ${meta.atual}${simbolo}</p>
         <p><strong>Desejado:</strong> ${meta.desejado}${simbolo}</p>
         <p><strong>Início:</strong> ${meta.inicio}</p>
         <p><strong>Prazo:</strong> ${meta.prazo}</p>
+        <button class="btnEditarMeta">Editar</button>
       </div>
     `;
 
-    card.addEventListener("click", () => {
+    card.addEventListener("click", (e) => {
+      if (e.target && e.target.classList.contains("btnEditarMeta")) return;
       document.getElementById(`meta-${index}`).classList.toggle("ativa");
     });
 
     listaMetas.appendChild(card);
+
+    const btnEditar = card.querySelector(".btnEditarMeta");
+    if (btnEditar) {
+      btnEditar.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        abrirModalMeta("editar", meta);
+      });
+    }
   });
 }
 
-
-//  cadastrar meta
-async function adicionarMeta() {
-  const token = localStorage.getItem("token");
-  const userId = getUserIdFromToken();
-
-  if (!camposMeta.tipo.value.trim()) return abrirPopupErro("Tipo obrigatório.");
-  if (!camposMeta.atual.value) return abrirPopupErro("Informe o valor atual.");
-  if (!camposMeta.desejado.value) return abrirPopupErro("Informe o desejado.");
-  if (!camposMeta.unidade.value) return abrirPopupErro("Selecione unidade.");
-  if (!camposMeta.inicio.value) return abrirPopupErro("Selecione início.");
-  if (!camposMeta.prazo.value) return abrirPopupErro("Selecione prazo.");
-
-  const inicioISO = new Date(camposMeta.inicio.value).toISOString().split("T")[0];
-  const prazoISO = new Date(camposMeta.prazo.value).toISOString().split("T")[0];
-
-  const body = {
-    tipo: camposMeta.tipo.value,
-    atual: Number(camposMeta.atual.value),
-    desejado: Number(camposMeta.desejado.value),
-    unidadeDeMedida: camposMeta.unidade.value,
-    inicio: inicioISO,
-    prazo: prazoISO
-  };
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/usuarios/${userId}/metas`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!res.ok) return abrirPopupErro("Erro ao cadastrar meta.");
-
-    abrirPopupSucesso("Meta cadastrada!");
-    limparCamposMeta();
-    carregarMetas();
-
-  } catch (e) {
-    console.error(e);
-    abrirPopupErro("Erro inesperado.");
-  }
+// sair
+function sair() {
+  localStorage.removeItem("token");
+  window.location.href = "../index.html";
 }
-
-// limpar campos metas
-function limparCamposMeta() {
-  Object.values(camposMeta).forEach(campo => campo.value = "");
-}
-
-
-// eventos
-document.addEventListener("DOMContentLoaded", () => {
-  verificarAutenticacao();
-  carregarUsuarioAPI();
-  carregarMetas();
-
-  document.getElementById("alturaValor").addEventListener("input", calcularIMC);
-  document.getElementById("pesoValor").addEventListener("input", calcularIMC);
-
-  const btnAdicionarMeta = document.getElementById("btnAdicionarMeta");
-  if (btnAdicionarMeta) {
-    btnAdicionarMeta.addEventListener("click", adicionarMeta);
-  }
-});
 
 
 // menu lateral
-function openNav() {
-  document.getElementById("navSide").style.width = "100%";
-}
+function openNav() { document.getElementById("navSide").style.width = "100%"; }
+function closeNav() { document.getElementById("navSide").style.width = "0"; }
 
-function closeNav() {
-  document.getElementById("navSide").style.width = "0";
-}
+
+document.addEventListener("DOMContentLoaded", () => {
+  protegerPagina();
+  carregarUsuarioAPI();
+  carregarMetas();
+
+  document.getElementById("alturaValor")?.addEventListener("input", calcularIMC);
+  document.getElementById("pesoValor")?.addEventListener("input", calcularIMC);
+
+  document.getElementById("btnModalMeta")?.addEventListener("click", salvarModalMeta);
+});

@@ -19,6 +19,7 @@
   />
   <title>GymFlow - Perfil do Usuário</title>
 </head>
+
 <body>
   <header>
     <div class="logo-container">
@@ -31,7 +32,7 @@
       <a href="../paginas/pagina-user.html">Meu perfil</a>
     </nav>
 
-    <!-- Nav lateral-->
+    <!-- nav lateral-->
     <nav id="navSide" class="nav-side">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
       <a href="../paginas/MenuPrincipal.html">Início</a>
@@ -41,22 +42,23 @@
     <span class="nav-side-icon" onclick="openNav()"><i class="fa-solid fa-bars"></i></span>
   </header>
 
-
   <main>
     <div class="main-container">
 
+      <!-- section - dados pessoais-->
       <section class="section-infos">
         <h2>Dados Pessoais</h2>
+
         <div class="section-infos-top">
-            <div class="info">
-              <label for="name">Nome:</label>
-              <input type="text" id="name" class="block" readonly />
-            </div>
-            
-            <div class="info">
-              <label for="email">Email:</label>
-              <input type="email" id="email" class="block" readonly />
-            </div>
+          <div class="info">
+            <label for="name">Nome:</label>
+            <input type="text" id="name" class="block" readonly />
+          </div>
+          
+          <div class="info">
+            <label for="email">Email:</label>
+            <input type="email" id="email" class="block" readonly />
+          </div>
         </div>
 
         <div class="section-infos-bottom">
@@ -66,13 +68,14 @@
               <input id="idadeValor" type="number" readonly />
               <p class="info-texto">Idade</p>
             </div>
-        
+
             <div class="info">
-              <input id="alturaValor" type="number" readonly>
+              <input id="alturaValor" type="number" readonly />
               <p class="info-texto">Altura (cm)</p>
             </div>
+
             <div class="info">
-              <input id="pesoValor" type="number" readonly>
+              <input id="pesoValor" type="number" readonly />
               <p class="info-texto">Peso (kg)</p>
             </div>
 
@@ -84,38 +87,50 @@
               <p class="info-texto">IMC</p>
             </div> 
           </div>
+
           <div class="left-btns">
             <button class="edit-btn" onclick="editar()">Editar</button>
             <button class="save-btn" onclick="salvar()">Salvar</button>
           </div>
-        
         </div>
-        
       </section>
 
-      
+      <!-- section - metas -->
       <section class="section-metas">
-        <h2>Cadastro Metas</h2>
+        <spam class="area-metas">
+          <div class="titulo-metas">
+          <h2>Cadastro Metas</h2>
+          <button class="btnNovaMeta" onclick="abrirModalMeta('criar')">Nova Meta +</button>
+        </div>
 
-        <!-- Formulário completo -->
-        <div class="form-metas">
-          <span>
-            <label>Tipo Meta:</label>
-            <input id="metaTipo" type="text" placeholder="Tipo da meta (ex: Peso, Tempo exercício)" />
-          </span>
+        <h2>Minhas metas</h2>
+        <div id="listaMetas" class="lista-metas"></div>
+        </spam>
+        
+        <button class="btn-sair" onclick="sair()">Sair</button>
+      </section>
+
+      <!-- modal - criar/editar meta-->
+      <div class="modal" id="modalMeta" aria-hidden="true">
+        <div class="modal-conteudo">
+          <h2 id="modalMetaTitulo">Meta</h2>
+          <input type="hidden" id="metaId" />
+          <spam class="meta-tipo">
+            <label>Tipo</label>
+            <input id="metaTipo" type="text" placeholder="Ex: Peso, Tempo exercício" />
+          </spam>
 
           <div class="linha-valor">
-            <span>
-              <label>Valor atual:</label>
-              <input id="metaAtual" type="number" placeholder="Valor atual" />
-            </span>
-            <span>
-              <label>Valor desejado:</label>
-              <input id="metaDesejado" type="number" placeholder="Valor desejado" />
-            </span>
-            
-            <span>
-              <label>Unidade:</label>
+            <div class="campo">
+              <label>Atual</label>
+              <input id="metaAtual" type="number" step="any" placeholder="Valor atual" />
+            </div>
+            <div class="campo">
+              <label>Desejado</label>
+              <input id="metaDesejado" type="number" step="any" placeholder="Valor desejado" />
+            </div>
+            <div class="campo">
+              <label>Unidade</label>
               <select id="metaUnidade">
                 <option value="QUILOS">Quilos</option>
                 <option value="GRAMAS">Gramas</option>
@@ -130,52 +145,49 @@
                 <option value="SEGUNDOS">Segundos</option>
                 <option value="HORAS">Horas</option>
               </select>
-            </span>
-          </div>
-
-          <div class="linha-final">
-            <div class="datas">
-              <span>
-                <label>Início:</label>
-                <input type="date" id="metaInicio" />
-              </span>
-              <span>
-                <label>Prazo:</label>
-                <input type="date" id="metaPrazo" />
-              </span>
             </div>
-            
-            <button id="btnAdicionarMeta" class="btnAdd">Criar Meta</button>
+          </div>
+
+          <div class="datas">
+            <div class="campo">
+              <label>Início</label>
+              <input type="date" id="metaInicio" />
+            </div>
+            <div class="campo">
+              <label>Prazo</label>
+              <input type="date" id="metaPrazo" />
+            </div>
+          </div>
+
+          <span class="modal-close" onclick="fecharModalMeta()">
+            <i class="fa-solid fa-x"></i>
+          </span>
+
+          <div class="modal-btns">
+            <button class="btnSalvar" type="button" id="btnModalMeta">Salvar</button>
           </div>
         </div>
-
-        <!-- lista de metas -->
-        <h2>Minhas metas:</h2>
-        <div id="listaMetas" class="lista-metas">
-        </div>
-      </section>
-
-        <button class="btn-sair" onclick="sair()">Sair</button>
-      
-
-      <!-- Popup Erro -->
-      <div id="popupErro" class="popup">
-        <div class="popup-conteudo">
-          <p id="popupMensagem"></p>
-          <button onclick="fecharPopup()">OK</button>
-        </div>
       </div>
 
-      <!-- Popup Sucesso -->
-      <div id="popupSucesso" class="popup">
-        <div class="popup-conteudo">
-          <p id="popupMensagemSucesso"></p>
-          <button onclick="fecharPopupSucesso()">OK</button>
-        </div>
-      </div>
 
     </div>
   </main>
+
+  <!-- popup erro-->
+  <div class="popup" id="popupErro">
+    <div class="popup-conteudo">
+      <p id="popupMensagem"></p>
+      <button onclick="fecharPopup()">OK</button>
+    </div>
+  </div>
+
+  <!-- popup sucesso -->
+  <div class="popup" id="popupSucesso">
+    <div class="popup-conteudo">
+      <p id="popupMensagemSucesso"></p>
+      <button onclick="fecharPopupSucesso()">OK</button>
+    </div>
+  </div>
 
   <script src="../js/pagina-user.js"></script>
 </body>

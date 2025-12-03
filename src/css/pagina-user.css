@@ -299,7 +299,8 @@ input[type="number"] {
     margin-top: 0.5em;
     padding: 0.5em;
     max-height: 350px;
-    overflow-y: auto;
+    min-height: 350px;       
+    overflow-y: auto;        
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -339,7 +340,7 @@ input[type="number"] {
     background: #ffffff;
     border-radius: 10px;
     border: 1px solid #d0def7;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.3s ease;  
 }
 
 .meta-details p{
@@ -355,13 +356,21 @@ input[type="number"] {
 .btnEditarMeta{
     padding: 0.5em;
     align-self: flex-end;
-    background-color: #616161;
-    color: #fff;
-    border-radius: 4px;
+    color: #616161;
+    background-color: #fff;
     border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
     opacity: 0.9;
-
 }
+
+.btnEditarMeta:hover{
+    opacity: 1;
+   
+}
+
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-4px); }

@@ -365,7 +365,7 @@ function renderizarMetas(metas) {
         <p><strong>Desejado:</strong> ${meta.desejado}${simbolo}</p>
         <p><strong>Início:</strong> ${meta.inicio}</p>
         <p><strong>Prazo:</strong> ${meta.prazo}</p>
-        <button class="btnEditarMeta">Editar</button>
+        <button class="btnEditarMeta"><i class="fa-solid fa-pencil"></i></button>
       </div>
     `;
 

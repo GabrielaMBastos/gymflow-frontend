@@ -53,7 +53,8 @@ main {
   box-shadow: 0 2px 6px #616161;
 }
 
-/* cintainer geral */
+
+/* container geral */
 .container-graficos {
   display: grid;
   grid-template-columns: repeat( 2, 1fr);
@@ -86,14 +87,71 @@ main {
   line-height: 1.4;
 }
 
-/* canvas*/
-.grafico,
-.grafico-secundario {
-  display: block;
-  width: 90% !important;
+/* Container do gráfico para controlar altura */
+.grafico-container {
+  width: 90%;
   max-width: 550px;
-  height: auto !important;
-  max-height: 320px;
+  height: 320px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Canvas do gráfico */
+.grafico-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Dropdown */
+.multi-select-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 10px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.dropdown-btn {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-btn .arrow {
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  z-index: 10;
+}
+
+.dropdown-content label {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.dropdown-content input[type="checkbox"] {
+  margin-right: 10px;
 }
 
 /* Responsividade*/

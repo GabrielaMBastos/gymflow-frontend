@@ -1,453 +1,343 @@
-function gerarCores(qtd) {
-  const cores = [];
-  for (let i = 0; i < qtd; i++) {
-    let cor = Math.floor(Math.random() * 16777215).toString(16);
-    cor = cor.padStart(6, '0');
-    cores.push('#' + cor);
-  }
-  return cores;
-}
+let chartPizzaInstance = null;
+let chartLinhaInstance = null;
+let chartHorizontalInstance = null;
+let chartRadarInstance = null;
 
-function mostrarMensagemCanvas(idCanvas, mensagem) {
-  const canvas = document.getElementById(idCanvas);
-  if (!canvas) return;
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "16px Arial";
-  ctx.fillStyle = "#555";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText(mensagem, canvas.width / 2, canvas.height / 2);
-}
-
-
+// config
 const API_URL =
   window.location.hostname.includes("localhost") ||
   window.location.hostname.includes("127.0.0.1")
     ? "http://localhost:8080/api"
     : "https://gymflow-backend.up.railway.app/api";
 
-
-// autenticaçao 
 const PAGE_REDIRECT =
   window.location.hostname.includes("localhost") ||
   window.location.hostname.includes("127.0.0.1")
     ? "/src/index.html"
     : "../index.html";
 
+// autenticação
 function verificarAutenticacao() {
   const token = localStorage.getItem("token");
-
   if (!token) {
     window.location.href = PAGE_REDIRECT;
-    throw new Error("Acesso negado: usuário não nao autenticado.");
+    throw new Error("Acesso negado: usuário não autenticado.");
   }
-
   return token;
 }
 
 const token = verificarAutenticacao();
 
-
-let chartInstance = null;
-
-
-// grafico pizza - Proporção por grupo muscular
-async function buscarDadosECriarGraficoPizza() {
-  mostrarMensagemCanvas("graficoPizza", "Carregando dados...");
-
+function getUserIdFromToken() {
   try {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      console.error("Token não encontrado. Faça login novamente.");
-      return;
-    }
-
-    // decodifica o token JWT
-    let userId;
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      userId = payload.idUsuario || payload.idUser || payload.id;
-    } catch (e) {
-      console.error("Erro ao decodificar o token:", e);
-      return;
-    }
-
-    if (!userId) {
-      console.error("ID do usuário não encontrado!");
-      return;
-    }
-
-    // busca todas as fichas do user
-    const respostaFichas = await fetch(`${API_URL}/fichas`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!respostaFichas.ok) {
-      throw new Error(`Erro ao buscar fichas: ${respostaFichas.status}`);
-    }
-
-    const textoFichas = await respostaFichas.text();
-    if (!textoFichas) {
-      console.warn(" Nenhuma ficha retornada do servidor.");
-      return;
-    }
-
-    const dadosFichas = JSON.parse(textoFichas);
-    const fichas =
-      dadosFichas.fichas ||
-      dadosFichas.content ||
-      (Array.isArray(dadosFichas) ? dadosFichas : []);
-
-    if (!Array.isArray(fichas) || fichas.length === 0) {
-      console.warn("Nenhuma ficha encontrada para o usuário.");
-      return;
-    }
-
-    const contagem = {};
-
-    //  em cada ficha busca os exercícios e agrupa por grupo muscular
-    for (const ficha of fichas) {
-      const fichaId = ficha.idFicha || ficha.id;
-
-      const respostaExercicios = await fetch(
-        `${API_URL}/fichas/exercicio?idFicha=${fichaId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      );
-
-      if (!respostaExercicios.ok) {
-        console.warn(`Erro ao buscar exercícios da ficha ${fichaId}`);
-        continue;
-      }
-
-      const textoEx = await respostaExercicios.text();
-      if (!textoEx) continue;
-
-      const dadosEx = JSON.parse(textoEx);
-      const listaExercicios = dadosEx.exerciciosDaFicha || dadosEx || [];
-
-      listaExercicios.forEach((ex) => {
-        const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
-        contagem[grupo] = (contagem[grupo] || 0) + 1;
-      });
-    }
-
-    const total = Object.values(contagem).reduce((a, b) => a + b, 0);
-    if (total === 0) {
-      console.warn("Nenhum exercício encontrado nas fichas.");
-      return;
-    }
-
-    const labels = Object.keys(contagem);
-    const valores = Object.values(contagem).map((qtd) =>
-      Number(((qtd / total) * 100).toFixed(1))
-    );
-    const cores = gerarCores(labels.length);
-
-    criarGraficoPizza(labels, valores, cores);
-  } catch (erro) {
-    console.error(" Erro ao buscar os dados do gráfico de pizza:", erro);
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.idUsuario || payload.idUser || payload.id;
+  } catch {
+    return null;
   }
 }
 
+const userId = getUserIdFromToken();
+if (!userId) {
+  localStorage.removeItem("token");
+  window.location.href = PAGE_REDIRECT;
+}
+
+// funções gerais
+function gerarCores(qtd) {
+  const coresBase = [
+    "#1565C0",
+    "#43A047",
+    "#FDD835",
+    "#E53935",
+    "#8E24AA",
+    "#00897B",
+    "#FB8C00",
+  ];
+  return Array.from({ length: qtd }, (_, i) => coresBase[i % coresBase.length]);
+}
+
+function mostrarMensagemCanvas(id, mensagem = "Sem dados para ser exibido") {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = canvas.parentElement.clientWidth;
+  canvas.height = canvas.parentElement.clientHeight;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "16px Montserrat";
+  ctx.fillStyle = "#555";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(mensagem, canvas.width / 2, canvas.height / 2);
+}
+
+// funções para buscar dados no back
+async function buscarTreinosDoUsuario(userId) {
+  try {
+    const resp = await fetch(`${API_URL}/treinos?usuarioId=${userId}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    });
+    if (!resp.ok) return [];
+    const dados = await resp.json();
+    return dados.treinos || dados.content || [];
+  } catch {
+    return [];
+  }
+}
+
+async function buscarFichasDoTreino(idTreino) {
+  try {
+    const resp = await fetch(`${API_URL}/fichas?idTreino=${idTreino}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    });
+    if (!resp.ok) return [];
+    const dados = await resp.json();
+    return dados.fichas || dados.content || [];
+  } catch {
+    return [];
+  }
+}
+
+// gráfico pizza
 function criarGraficoPizza(labels, valores, cores) {
   const ctx = document.getElementById("graficoPizza").getContext("2d");
+  if (chartPizzaInstance) chartPizzaInstance.destroy();
 
-  new Chart(ctx, {
-    type: "pie",
+  chartPizzaInstance = new Chart(ctx, {
+    type: "doughnut",
     data: {
-      labels: labels,
+      labels,
       datasets: [
         {
-          label: "Proporção por Grupo Muscular",
+          label: "% por Grupo Muscular",
           data: valores,
           backgroundColor: cores,
-          borderWidth: 1,
+          borderColor: "#fff",
+          borderWidth: 2,
         },
       ],
     },
     options: {
-      maintainAspectRatio: true,
       responsive: true,
-      plugins: {
-        legend: { position: "right" },
-        title: {
-          display: true,
-        },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              return `${context.label}: ${context.parsed}%`;
-            },
-          },
-        },
-      },
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "right" } },
     },
   });
 }
 
+async function buscarDadosECriarGraficoPizza() {
+  mostrarMensagemCanvas("graficoPizza", "Carregando dados...");
+  const treinos = await buscarTreinosDoUsuario(userId);
+  if (!treinos.length) return mostrarMensagemCanvas("graficoPizza");
 
-// grafico de linha - evolução de carga
-async function buscarDadosECriarGraficoLinha() {
-mostrarMensagemCanvas("graficoLinha", "Carregando dados...");
-
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token não encontrado. Faça login novamente.");
-      return;
-    }
-
-    // busca todas as fichas do user 
-    const respostaFichas = await fetch(`${API_URL}/fichas`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!respostaFichas.ok) throw new Error("Erro ao buscar fichas.");
-
-    const textoFichas = await respostaFichas.text();
-    if (!textoFichas) {
-      console.warn(" Nenhuma ficha retornada do servidor.");
-      return;
-    }
-
-    const dadosFichas = JSON.parse(textoFichas);
-    const fichas = dadosFichas.fichas || dadosFichas || [];
-
-    const exercicioMap = {};
-
-    // em cada ficha busca os exercícios
+  const contagem = {};
+  for (const treino of treinos) {
+    const fichas = await buscarFichasDoTreino(treino.id);
     for (const ficha of fichas) {
-      const respostaEx = await fetch(
-        `${API_URL}/fichas/exercicio?idFicha=${ficha.id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (!respostaEx.ok) continue;
-
-      const textoEx = await respostaEx.text();
-      if (!textoEx) continue;
-
-      const dadosEx = JSON.parse(textoEx);
-
-      // mapeia cada exercício com seu nome/equipamento
-      for (const ex of dadosEx.exerciciosDaFicha || []) {
-        exercicioMap[ex.exercicioFichaId] =
-          ex.nome || ex.equipamento || "Desconhecido";
-      }
-    }
-
-    const seriesTotais = [];
-
-    // em cada exercício busca suas séries registradas
-    for (const exercicioId in exercicioMap) {
-      const respostaSeries = await fetch(
-        `${API_URL}/series?exercicioFichaId=${exercicioId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      );
-
-      if (respostaSeries.status === 204) continue;
-      if (!respostaSeries.ok) continue;
-
-      const texto = await respostaSeries.text();
-      if (!texto) continue;
-
-      let series = [];
       try {
-        const json = JSON.parse(texto);
-        if (Array.isArray(json)) {
-          series = json;
-        } else if (json.series) {
-          series = json.series;
-        } else if (json.content) {
-          series = json.content;
-        }
-      } catch (e) {
-        console.warn(
-          ` Resposta inválida para exercicioFichaId=${exercicioId}`,
-          e
+        const respEx = await fetch(
+          `${API_URL}/fichas/exercicio?idFicha=${ficha.id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        continue;
-      }
-
-      if (Array.isArray(series) && series.length > 0) {
-        const idNum = Number(exercicioId);
-        const seriesComId = series.map((s) => ({
-          ...s,
-          exercicioFichaId: idNum,
-        }));
-        seriesTotais.push(...seriesComId);
-      }
+        if (!respEx.ok) continue;
+        const lista = (await respEx.json()).exerciciosDaFicha || [];
+        lista.forEach((ex) => {
+          const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
+          contagem[grupo] = (contagem[grupo] || 0) + 1;
+        });
+      } catch {}
     }
-
-    // caso não existam séries registradas
-    if (seriesTotais.length === 0) {
-      console.warn("Nenhuma série encontrada para exibir no gráfico.");
-
-      const canvas = document.getElementById("graficoLinha");
-      if (canvas) {
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "16px Arial";
-        ctx.fillText("Sem dados para exibir no gráfico", 50, 50);
-      }
-
-      return;
-    }
-
-    // agrupa as séries por equipamento
-    const agrupado = {};
-    for (const s of seriesTotais) {
-      const equipamento = exercicioMap[s.exercicioFichaId] || "Desconhecido";
-      if (!agrupado[equipamento]) agrupado[equipamento] = [];
-      agrupado[equipamento].push({
-        data: s.data,
-        carga: s.carga,
-      });
-    }
-
-    // lista de todas as datas
-    const todasAsDatas = [
-      ...new Set(seriesTotais.map((s) => s.data)),
-    ].sort((a, b) => new Date(a) - new Date(b));
- 
-    const cores = gerarCores(Object.keys(agrupado).length);
-    const datasets = Object.entries(agrupado).map(([equipamento, lista], i) => {
-      const valores = todasAsDatas.map((data) => {
-        const serie = lista.find((s) => s.data === data);
-        return serie ? serie.carga : null;
-      });
-
-      return {
-        label: `${equipamento} (kg)`,
-        data: valores,
-        borderColor: cores[i],
-        backgroundColor: cores[i],
-        tension: 0.3,
-        spanGaps: true,
-      };
-    });
-
-    criarGraficoLinha(todasAsDatas, datasets);
-  } catch (erro) {
-    console.error("Erro ao buscar dados do gráfico:", erro);
   }
+
+  const total = Object.values(contagem).reduce((a, b) => a + b, 0);
+  if (!total) return mostrarMensagemCanvas("graficoPizza");
+
+  criarGraficoPizza(
+    Object.keys(contagem),
+    Object.values(contagem).map((q) => Number(((q / total) * 100).toFixed(1))),
+    gerarCores(Object.keys(contagem).length)
+  );
 }
 
+// gráfico linha
 function criarGraficoLinha(labels, datasets) {
   const ctx = document.getElementById("graficoLinha").getContext("2d");
+  if (chartLinhaInstance) chartLinhaInstance.destroy();
 
-  if (chartInstance) chartInstance.destroy();
-
-  chartInstance = new Chart(ctx, {
+  chartLinhaInstance = new Chart(ctx, {
     type: "line",
     data: { labels, datasets },
     options: {
       responsive: true,
-      plugins: {
-        title: {
-          display: true,
-        },
-        legend: { position: "top" },
-        tooltip: {
-          callbacks: {
-            label: (context) => `${context.dataset.label}: ${context.parsed.y} kg`,
-          },
-        },
-      },
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "top" } },
       scales: {
         x: { title: { display: true, text: "Data" } },
-        y: {
-          title: { display: true, text: "Carga (kg)" },
-          beginAtZero: true,
-        },
+        y: { beginAtZero: true, title: { display: true, text: "Carga (kg)" } },
       },
     },
   });
 }
 
-// Gráfico horizontal
+async function buscarDadosECriarGraficoLinha() {
+  mostrarMensagemCanvas("graficoLinha", "Carregando dados...");
+  const treinos = await buscarTreinosDoUsuario(userId);
+  if (!treinos.length) return mostrarMensagemCanvas("graficoLinha");
 
-async function buscarDadosECriarGraficoHorizontal() {
-  mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
+  const mapExNome = {};
+  const seriesTotais = [];
 
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token não encontrado. Faça login novamente.");
-      return;
+  for (const treino of treinos) {
+    const fichas = await buscarFichasDoTreino(treino.id);
+    for (const ficha of fichas) {
+      try {
+        const respEx = await fetch(
+          `${API_URL}/fichas/exercicio?idFicha=${ficha.id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!respEx.ok) continue;
+        const exercicios = (await respEx.json()).exerciciosDaFicha || [];
+        for (const ex of exercicios) {
+          mapExNome[ex.exercicioFichaId] =
+            ex.nome || ex.equipamento || "Desconhecido";
+          const respSeries = await fetch(
+            `${API_URL}/series?exercicioFichaId=${ex.exercicioFichaId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (!respSeries.ok) continue;
+          const lista = (await respSeries.json()).series || [];
+          lista.forEach((s) =>
+            seriesTotais.push({ ...s, exercicioFichaId: ex.exercicioFichaId })
+          );
+        }
+      } catch {}
     }
+  }
 
-    // Busca todas as séries do usuário
-    const resposta = await fetch(`${API_URL}/series`, {
-      headers: { Authorization: `Bearer ${token}` },
+  if (!seriesTotais.length) return mostrarMensagemCanvas("graficoLinha");
+
+  const agrupado = {};
+  for (const s of seriesTotais) {
+    const nome = mapExNome[s.exercicioFichaId] || "Desconhecido";
+    if (!agrupado[nome]) agrupado[nome] = [];
+    agrupado[nome].push({ data: s.data, carga: s.carga });
+  }
+
+  popularDropdownEquipamentos(agrupado);
+  atualizarGraficoLinha(agrupado);
+}
+
+// seletor equipamento do gráfico linha
+function popularDropdownEquipamentos(agrupado) {
+  const dropdownContent = document.getElementById("dropdownContent");
+  dropdownContent.innerHTML = "";
+  Object.keys(agrupado).forEach((nome) => {
+    const label = document.createElement("label");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = nome;
+    checkbox.addEventListener("change", () => {
+      const checkedBoxes = Array.from(
+        dropdownContent.querySelectorAll("input:checked")
+      );
+      if (checkedBoxes.length > 4) {
+        checkbox.checked = false;
+        alert("Você pode selecionar no máximo 4 exercícios.");
+        return;
+      }
+      atualizarGraficoLinha(agrupado);
+    });
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(nome));
+    dropdownContent.appendChild(label);
+  });
+
+  const btn = document.getElementById("dropdownBtn");
+  btn.textContent = "Selecione até 4 exercícios ";
+  const arrow = document.createElement("span");
+  arrow.classList.add("arrow");
+  arrow.innerHTML = "&#9662;";
+  btn.appendChild(arrow);
+
+  btn.addEventListener("click", () => {
+    dropdownContent.style.display =
+      dropdownContent.style.display === "block" ? "none" : "block";
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!btn.contains(e.target) && !dropdownContent.contains(e.target)) {
+      dropdownContent.style.display = "none";
+    }
+  });
+}
+
+function atualizarGraficoLinha(agrupado) {
+  const dropdownContent = document.getElementById("dropdownContent");
+  const selecionados = Array.from(
+    dropdownContent.querySelectorAll("input:checked")
+  ).map((cb) => cb.value);
+
+  const datasOrdenadas = [
+    ...new Set(Object.values(agrupado).flatMap((l) => l.map((s) => s.data))),
+  ].sort((a, b) => new Date(a) - new Date(b));
+
+  const datasets = selecionados.map((nome, i) => {
+    const lista = agrupado[nome];
+    const valores = datasOrdenadas.map((d) => {
+      const item = lista.find((x) => x.data === d);
+      return item ? item.carga : null;
     });
 
-    if (!resposta.ok) {
-      throw new Error("Erro ao buscar séries.");
-    }
+    return {
+      label: `${nome} (kg)`,
+      data: valores,
+      borderColor: gerarCores(selecionados.length)[i],
+      backgroundColor: gerarCores(selecionados.length)[i],
+      tension: 0.3,
+      spanGaps: true,
+    };
+  });
 
-    const dados = await resposta.json();
-    const series = dados.series || [];
+  criarGraficoLinha(datasOrdenadas, datasets);
+}
 
-    if (series.length === 0) {
-      mostrarMensagemCanvas("graficoHorizontal", "Nenhuma série encontrada.");
-      return;
-    }
+// gráfico horizontal
+async function buscarDadosECriarGraficoHorizontal() {
+  mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
+  try {
+    const resp = await fetch(`${API_URL}/series`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!resp.ok) throw new Error();
+    const series = (await resp.json()).series || [];
+    if (!series.length) return mostrarMensagemCanvas("graficoHorizontal");
 
-    // Agrupa as séries por semana e soma o volume (carga * repetições)
     const volumeSemanal = {};
-
     for (const s of series) {
       const data = new Date(s.data);
       if (isNaN(data)) continue;
-
-      // Calcula o número da semana no ano
-      const ano = data.getFullYear();
-      const semana = Math.ceil((data.getDate() + new Date(ano, data.getMonth(), 1).getDay()) / 7);
       const chave = formatarSemana(data);
-
-      const carga = Number(s.carga) || 0;
-      const repeticoes = Number(s.repeticoes) || 0;
-      const volume = carga * repeticoes;
-
-      volumeSemanal[chave] = (volumeSemanal[chave] || 0) + volume;
+      volumeSemanal[chave] =
+        (volumeSemanal[chave] || 0) +
+        (Number(s.carga) || 0) * (Number(s.repeticoes) || 0);
     }
 
     const labels = Object.keys(volumeSemanal).sort();
-    const valores = Object.values(volumeSemanal).map((v) => Number(v.toFixed(2)));
-
+    const valores = Object.values(volumeSemanal).map((v) =>
+      Number(v.toFixed(2))
+    );
     criarGraficoHorizontal(labels, valores);
-  } catch (erro) {
-    console.error("Erro ao criar gráfico horizontal:", erro);
-    mostrarMensagemCanvas("graficoHorizontal", "Erro ao carregar dados.");
+  } catch {
+    mostrarMensagemCanvas("graficoHorizontal");
   }
 }
 
 function criarGraficoHorizontal(labels, valores) {
   const canvas = document.getElementById("graficoHorizontal");
+  if (!canvas) return mostrarMensagemCanvas("graficoHorizontal");
   const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    console.error("Canvas do gráfico horizontal não encontrado.");
-    return;
-  }
-
   const gradient = ctx.createLinearGradient(0, 0, 600, 0);
   gradient.addColorStop(0, "#1565C0");
   gradient.addColorStop(1, "#43A047");
@@ -469,103 +359,66 @@ function criarGraficoHorizontal(labels, valores) {
     options: {
       indexAxis: "y",
       responsive: true,
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: "",
-          font: { size: 16, family: "Montserrat" },
-          color: "#333",
-        },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => `${ctx.parsed.x.toFixed(1)} kg totais`,
-          },
-        },
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          grid: { color: "rgba(200, 200, 200, 0.2)" },
-          ticks: { color: "#333" },
-          title: { display: true, text: "Volume total (kg)", color: "#333" },
-        },
-        y: {
-          grid: { display: false },
-          ticks: { color: "#333" },
-          title: { display: true, text: "Semana", color: "#333" },
-        },
-      },
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true }, y: {} },
     },
   });
 }
 
-//Deixa mais legível
 function formatarSemana(data) {
   const inicio = new Date(data);
-  const diaSemana = inicio.getDay(); // 0 = domingo
-  const diferenca = diaSemana === 0 ? 6 : diaSemana - 1; // segunda como início
+  const diaSemana = inicio.getDay();
+  const diferenca = diaSemana === 0 ? 6 : diaSemana - 1;
   inicio.setDate(inicio.getDate() - diferenca);
-
   const fim = new Date(inicio);
   fim.setDate(inicio.getDate() + 6);
-
-  const formatar = (d) =>
-    `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
-
-  return `Semana ${formatar(inicio)} - ${formatar(fim)}`;
+  const f = (d) =>
+    `${String(d.getDate()).padStart(2, "0")}/${String(
+      d.getMonth() + 1
+    ).padStart(2, "0")}`;
+  return `Semana ${f(inicio)} - ${f(fim)}`;
 }
 
-// Gráfico Radar
-
+// gráfico radar
 async function buscarDadosECriarGraficoRadar() {
   mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
-
   try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token não encontrado. Faça login novamente.");
-      return;
-    }
-
-    const respostaFichas = await fetch(`${API_URL}/fichas`, {
+    const resp = await fetch(`${API_URL}/fichas`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!respostaFichas.ok) throw new Error("Erro ao buscar fichas.");
-
-    const dadosFichas = await respostaFichas.json();
-    const fichas = dadosFichas.fichas || [];
+    if (!resp.ok) throw new Error();
+    const fichas = (await resp.json()).fichas || [];
+    if (!fichas.length) return mostrarMensagemCanvas("graficoRadar");
 
     const avaliacoes = [];
     const gruposMusculares = new Set();
 
     for (const ficha of fichas) {
       try {
-        const respostaEx = await fetch(`${API_URL}/fichas/exercicio?idFicha=${ficha.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!respostaEx.ok) continue;
-
-        const dadosEx = await respostaEx.json();
-        const exercicios = dadosEx.exerciciosDaFicha || [];
-
+        const respEx = await fetch(
+          `${API_URL}/fichas/exercicio?idFicha=${ficha.id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!respEx.ok) continue;
+        const exercicios = (await respEx.json()).exerciciosDaFicha || [];
         const somaPorGrupo = {};
         exercicios.forEach((ex) => {
           const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
           gruposMusculares.add(grupo);
-          somaPorGrupo[grupo] = (somaPorGrupo[grupo] || 0) +
-            (ex.cargaMedia != null ? ex.cargaMedia : 50);
+          somaPorGrupo[grupo] =
+            (somaPorGrupo[grupo] || 0) + (ex.cargaMedia ?? 50);
         });
-
-        avaliacoes.push({ nome: ficha.nomeFicha || `Ficha ${ficha.id}`, grupos: somaPorGrupo });
-      } catch (e) {
-        console.warn(`Erro ao carregar ficha ${ficha.id}:`, e);
-      }
+        avaliacoes.push({
+          nome: ficha.nomeFicha || `Ficha ${ficha.id}`,
+          grupos: somaPorGrupo,
+        });
+      } catch {}
     }
+
+    if (!avaliacoes.length) return mostrarMensagemCanvas("graficoRadar");
 
     const labels = Array.from(gruposMusculares);
     const cores = gerarCores(avaliacoes.length);
-
     const datasets = avaliacoes.map((av, i) => ({
       label: av.nome,
       data: labels.map((g) => av.grupos[g] || 0),
@@ -577,17 +430,16 @@ async function buscarDadosECriarGraficoRadar() {
     }));
 
     criarGraficoRadar(labels, datasets);
-  } catch (erro) {
-    console.error("Erro ao criar gráfico radar:", erro);
+  } catch {
+    mostrarMensagemCanvas("graficoRadar");
   }
 }
 
-let graficoRadarInstance = null;
 function criarGraficoRadar(labels, datasets) {
-  const ctx = document.getElementById("graficoRadar").getContext("2d");
-  if (graficoRadarInstance) graficoRadarInstance.destroy();
-
-  graficoRadarInstance = new Chart(ctx, {
+  const ctx = document.getElementById("graficoRadar")?.getContext("2d");
+  if (!ctx) return;
+  if (chartRadarInstance) chartRadarInstance.destroy();
+  chartRadarInstance = new Chart(ctx, {
     type: "radar",
     data: { labels, datasets },
     options: {
@@ -597,7 +449,10 @@ function criarGraficoRadar(labels, datasets) {
         r: {
           angleLines: { color: "#ccc" },
           grid: { color: "#ddd" },
-          pointLabels: { font: { size: 14, family: "Montserrat" }, color: "#333" },
+          pointLabels: {
+            font: { size: 14, family: "Montserrat" },
+            color: "#333",
+          },
           suggestedMin: 0,
           suggestedMax: 100,
         },
@@ -612,32 +467,12 @@ function criarGraficoRadar(labels, datasets) {
   });
 }
 
-function gerarCores(qtd) {
-  const coresBase = ["#1565C0", "#43A047", "#FDD835", "#E53935", "#8E24AA", "#00897B", "#FB8C00"];
-  return Array.from({ length: qtd }, (_, i) => coresBase[i % coresBase.length]);
-}
-
-function mostrarMensagemCanvas(id, mensagem) {
-  const canvas = document.getElementById(id);
-  const ctx = canvas.getContext("2d");
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = "16px Montserrat";
-  ctx.fillStyle = "#555";
-  ctx.textAlign = "center";
-  ctx.fillText(mensagem, canvas.width / 2, canvas.height / 2);
-}
-
-
 buscarDadosECriarGraficoPizza();
 buscarDadosECriarGraficoLinha();
 buscarDadosECriarGraficoHorizontal();
 buscarDadosECriarGraficoRadar();
 
 // menu lateral
-window.openNav = function() {
-  document.getElementById("navSide").style.width = "100%";
-};
-
-window.closeNav = function() {
-  document.getElementById("navSide").style.width = "0";
-};
+window.openNav = () =>
+  (document.getElementById("navSide").style.width = "100%");
+window.closeNav = () => (document.getElementById("navSide").style.width = "0");

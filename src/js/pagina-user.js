@@ -1,4 +1,3 @@
-
 // config
 const API_BASE_URL =
   window.location.hostname.includes("localhost") ||
@@ -12,31 +11,10 @@ const PAGE_REDIRECT =
     ? "/src/index.html"
     : "../index.html";
 
-
-// token - expiração e autenticaçao
-function tokenExpirado(token) {
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    const agora = Math.floor(Date.now() / 1000);
-    return payload.exp && payload.exp < agora;
-  } catch (e) {
-    console.error("Erro ao decodificar token", e);
-    return true;
-  }
-}
-
-function protegerPagina() {
-  const token = localStorage.getItem("token");
-  if (!token || tokenExpirado(token)) {
-    localStorage.removeItem("token");
-    window.location.href = PAGE_REDIRECT;
-    throw new Error("Token expirado ou inválido.");
-  }
-}
-
 function getUserIdFromToken() {
   const token = localStorage.getItem("token");
   if (!token) return null;
+
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.idUser;
@@ -44,6 +22,12 @@ function getUserIdFromToken() {
     console.error("Erro ao decodificar token", err);
     return null;
   }
+}
+
+// proteção simples da página
+function protegerPagina() {
+  const token = localStorage.getItem("token");
+  if (!token) window.location.href = PAGE_REDIRECT;
 }
 
 async function fetchComToken(url, options = {}) {
@@ -58,18 +42,8 @@ async function fetchComToken(url, options = {}) {
     Authorization: `Bearer ${token}`,
   };
 
-  const res = await fetch(url, options);
-
-  if (res.status === 401) {
-    if (tokenExpirado(token)) {
-      sair();
-      return null;
-    }
-  }
-
-  return res;
+  return fetch(url, options);
 }
-
 
 // popups
 function abrirPopupErro(msg) {
@@ -86,7 +60,6 @@ function abrirPopupSucesso(msg) {
 function fecharPopupSucesso() {
   document.getElementById("popupSucesso").style.display = "none";
 }
-
 
 // carregar dados do usuário
 async function carregarUsuarioAPI() {
@@ -122,8 +95,6 @@ async function carregarUsuarioAPI() {
     console.error(e);
   }
 }
-
-
 // editar/salvar dados
 function editar() {
   const sectionInfos = document.querySelector(".section-infos");
@@ -139,7 +110,10 @@ function editar() {
   });
 
   const email = document.getElementById("email");
-  if (email) { email.setAttribute("readonly", true); email.disabled = true; }
+  if (email) {
+    email.setAttribute("readonly", true);
+    email.disabled = true;
+  }
 
   document.getElementById("idadeValor") && (document.getElementById("idadeValor").style.display = "none");
   document.getElementById("dataNascimento") && (document.getElementById("dataNascimento").style.display = "inline-block");
@@ -159,7 +133,10 @@ function desabilitarCampos() {
   });
 
   const email = document.getElementById("email");
-  if (email) { email.setAttribute("readonly", true); email.disabled = true; }
+  if (email) {
+    email.setAttribute("readonly", true);
+    email.disabled = true;
+  }
 
   document.getElementById("dataNascimento") && (document.getElementById("dataNascimento").style.display = "none");
   document.getElementById("idadeValor") && (document.getElementById("idadeValor").style.display = "inline-block");
@@ -168,6 +145,7 @@ function desabilitarCampos() {
 async function salvar() {
   try {
     const userId = getUserIdFromToken();
+
     const dataNascimentoInput = document.getElementById("dataNascimento");
     if (dataNascimentoInput && dataNascimentoInput.style.display !== "none") {
       window.dataNascimentoAtual = dataNascimentoInput.value;
@@ -198,7 +176,6 @@ async function salvar() {
   }
 }
 
-
 // IMC
 function calcularIMC() {
   const peso = parseFloat(document.getElementById("pesoValor")?.value || 0);
@@ -218,7 +195,6 @@ function calcularIMC() {
   document.getElementById("imcClassificacao").textContent = c;
 }
 
-
 // modal criar e editar metas
 const listaMetas = document.getElementById("listaMetas");
 let metaEditandoId = null;
@@ -235,6 +211,7 @@ function abrirModalMeta(tipo, meta = null) {
     document.getElementById("btnModalMeta").textContent = "Criar Meta";
   } else if (tipo === "editar" && meta) {
     metaEditandoId = meta.id;
+
     document.getElementById("modalMetaTitulo").textContent = "Editar Meta";
     document.getElementById("metaId").value = meta.id;
     document.getElementById("metaTipo").value = meta.tipo;
@@ -243,6 +220,7 @@ function abrirModalMeta(tipo, meta = null) {
     document.getElementById("metaUnidade").value = meta.unidadeDeMedida;
     document.getElementById("metaInicio").value = meta.inicio;
     document.getElementById("metaPrazo").value = meta.prazo;
+
     document.getElementById("btnModalMeta").textContent = "Salvar Alterações";
   }
 }
@@ -268,7 +246,6 @@ function limparCamposMeta() {
 async function salvarModalMeta() {
   const userId = getUserIdFromToken();
 
-  // validações
   if (!document.getElementById("metaTipo").value.trim()) return abrirPopupErro("Tipo obrigatório.");
   if (!document.getElementById("metaAtual").value) return abrirPopupErro("Informe o valor atual.");
   if (!document.getElementById("metaDesejado").value) return abrirPopupErro("Informe o desejado.");
@@ -293,6 +270,7 @@ async function salvarModalMeta() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+
       if (!res || !res.ok) return abrirPopupErro("Erro ao atualizar meta.");
       abrirPopupSucesso("Meta atualizada!");
     } else {
@@ -301,6 +279,7 @@ async function salvarModalMeta() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+
       if (!res || !res.ok) return abrirPopupErro("Erro ao cadastrar meta.");
       abrirPopupSucesso("Meta cadastrada!");
     }
@@ -392,10 +371,13 @@ function sair() {
   window.location.href = "../index.html";
 }
 
-
 // menu lateral
-function openNav() { document.getElementById("navSide").style.width = "100%"; }
-function closeNav() { document.getElementById("navSide").style.width = "0"; }
+function openNav() {
+  document.getElementById("navSide").style.width = "100%";
+}
+function closeNav() {
+  document.getElementById("navSide").style.width = "0";
+}
 
 
 document.addEventListener("DOMContentLoaded", () => {

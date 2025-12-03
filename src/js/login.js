@@ -4,18 +4,6 @@ const API_URL =
     ? "http://localhost:8080/api/usuarios/login"
     : "https://gymflow-backend.up.railway.app/api/usuarios/login";
 
-// Verifica expiração do token              
-function tokenExpirado(token) {
-  try {
-    const payloadBase64 = token.split(".")[1];
-    const payload = JSON.parse(atob(payloadBase64));
-    const agora = Date.now() / 1000; // segundos
-    return payload.exp < agora;
-  } catch (err) {
-    return true;
-  }
-}
-
 function caminhoMenu() {
   return window.location.origin.includes("localhost") ||
     window.location.origin.includes("127.0.0.1")
@@ -25,7 +13,7 @@ function caminhoMenu() {
 
 // Verifica token ao abrir tela
 const token = localStorage.getItem("token");
-if (token && !tokenExpirado(token)) {
+if (token) {
   window.location.href = caminhoMenu();
 }
 
@@ -53,27 +41,28 @@ async function login(event) {
       body: JSON.stringify({ email, senha }),
     });
 
-    if (res.ok) {
-      const data = await res.json();
-
-      // remove token antigo e salva o novo
-      localStorage.setItem("token", data.token);
-      console.log("Login bem-sucedido. Token salvo:", data.token);
-      window.location.href = caminhoMenu();
-    } else {
+    if (!res.ok) {
       mostrarPopup("Email ou senha inválidos!");
+      return;
     }
+
+    const data = await res.json();
+
+    // salva token normalmente
+    localStorage.setItem("token", data.token);
+    console.log("Login bem-sucedido. Token salvo:", data.token);
+
+    window.location.href = caminhoMenu();
   } catch (err) {
-    mostrarPopup("Erro de conexão com o servidor!");
     console.error(err);
+    mostrarPopup("Erro de conexão com o servidor!");
   }
 }
 
-// Validação de email
+
 function validarEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.toLowerCase());
 }
-
 // Popups
 function abrirPopup(id) {
   document.getElementById(id).style.display = "flex";
@@ -84,6 +73,7 @@ function fecharPopup() {
 function fecharPopupSenha() {
   document.getElementById("popupSenha").style.display = "none";
 }
+
 function mostrarPopup(msg) {
   document.getElementById("popupMensagem").innerText = msg;
   abrirPopup("popupErro");

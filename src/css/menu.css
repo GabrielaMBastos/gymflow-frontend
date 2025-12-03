@@ -15,7 +15,7 @@ h2 {
 }
 
 h3 {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 60px;
   text-align: center;
   color: #1565C0;
@@ -45,20 +45,6 @@ h4 {
   margin-bottom: -25px;
 }
 
-.fichas {
-  font-family: "Montserrat", sans-serif;
-  font-size: 18px;
-  flex-direction: column;
-  display: flex;
-  color: #2b2727;
-  text-align: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  z-index: 10;
-  margin-top: 0;
-}
-
 .listas-treinos {
   flex-direction: column;
   display: flex;
@@ -69,6 +55,15 @@ h4 {
   overflow: auto;
 }
 
+.cadastro-de-treinos {
+  margin-left: 20%;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 60%;
+
+}
 .titulo-carrosel {
 
   justify-content: left;
@@ -106,15 +101,6 @@ h4 {
   width: 100%;
   height: 100%;
   animation: slide 45s infinite;
-}
-
-.nav {
-  font-family: "Montserrat", sans-serif;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding-right: 20px;
-  margin-top: -65px;
 }
 
 .slide {
@@ -192,40 +178,15 @@ h4 {
 
 .criar-e-editar-ficha {
   text-align: center;
-  display: center;
   flex-direction: column;
   align-items: center;
   text-align: center;
   border-bottom: 2px solid #2b2727;
   width: 50%;
   margin-left: 25%;
+  margin-bottom: 5%;
 }
 
-.separacao-fichas {
-  width: 92vw;
-  height: 38vw;
-  display: flex;
-  justify-content: center;
-  align-items: flex;
-  margin-top: 60px;
-  margin-left: 5%;
-}
-
-.treinos {
-  margin-left: 2%;
-  width: 20vw;
-  height: 60vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  border-radius: 5px;
-  box-shadow: 2px 4px 6px rgba(39, 39, 39, 0.5);
-  background-position: center;
-  flex-direction: column;
-  position: relative;
-  overflow: auto;
-}
 
 .ocultar {
   width: 100%;
@@ -234,21 +195,6 @@ h4 {
   justify-content: center;
   align-items: center;
   text-align: center;
-}
-
-.adicionar-treinos {
-  margin-left: 2%;
-  width: 250px;
-  height: 250px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  border-radius: 5px;
-  box-shadow: 2px 4px 6px rgba(39, 39, 39, 0.5);
-  background-position: center;
-  flex-direction: column;
-
 }
 
 .cabecalho {
@@ -298,17 +244,8 @@ h4 {
 }
 
 .logo-img-grande {
-  width: 40vw;
-  height: 40vh;
-}
-
-.criar-ficha {
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  display: flex;
+  width: 32vw;
+  height: 35vh;
 }
 
 .topo {
@@ -324,8 +261,15 @@ h4 {
   cursor: pointer;
 }
 
-.criar-ficha-conteudo {
-  padding-bottom: 60px;
+.botao-ficha {
+  margin: 5px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  border: none;
+  background-color: #00C853;
+  color: aliceblue;
+  height: 35px;
+  cursor: pointer;
 }
 
 .topo1 {
@@ -350,30 +294,52 @@ h4 {
   color: aliceblue;
 }
 
-.botao-ficha {
-  margin: 30px 0 20px;
-  padding: 12px 24px;
-  border-radius: 15px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  border: none;
-  background-color: #00C853;
-  color: aliceblue;
-  cursor: pointer;
-}
-
-.botao-ficha2 {
-  margin: 5px 0 2px;
-  padding: 12px 24px;
-  border-radius: 15px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  border: none;
-  background-color: #00C853;
-  color: aliceblue;
-  cursor: pointer;
-}
-
 button:hover {
   background-color: #028b3b;
+}
+
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 15px;
+  margin-left: 5vw;
+}
+
+.dropdown {
+  position: absolute;
+
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  margin-left: 3vw;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #3e8e41;
 }
 
 .modal {
@@ -424,50 +390,65 @@ input[type="text"] {
   outline: none;
 }
 
-.texto-ficha {
-  margin: 30px auto 20px;
-  padding: 12px 50px;
+.caixa-texto {
+  width: 50%;
   border-radius: 15px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  border: none;
+}
+
+/* Style the form */
+#regForm {
+  background-color: #ffffff;
+  margin: 100px;
+  padding: 10%;
+  width: 70%;
+  min-width: 300px;
+}
+
+/* Style the input fields */
+input {
+  padding: 10px;
+  width: 50%;
+  font-size: 17px;
+  font-family: "Montserrat", sans-serif;
+  border: 1px solid #aaaaaa;
+  border-radius: 15px;
+}
+
+/* Mark input boxes that gets an error on validation: */
+input.invalid {
+  background-color: #ffdddd;
+}
+
+/* Hide all steps by default: */
+.tab {
   text-align: center;
-  margin-top: 30px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  display: none;
+  height: 240px;  
 }
 
-.botao-remover {
-  margin: 3px;
-  padding: 6px 12px;
-  border-radius: 15px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+/* Make circles that indicate the steps of the form: */
+.step {
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbbbbb;
   border: none;
-  background-color: #D32F2F;
-  color: aliceblue;
-  cursor: pointer;
-  margin-top: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
 }
 
-.botao-remover:hover {
-  background-color: #942121;
+/* Mark the active step: */
+.step.active {
+  opacity: 1;
 }
 
-.botao-remover2 {
-
-  margin-left: 2%;
-  padding: 3px 6px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  border: none;
-  background-color: #D32F2F;
-  color: aliceblue;
-  cursor: pointer;
-}
-
-.botao-remover2:hover {
-  background-color: #942121;
-}
-
-.invisivel {
-  border: none;
-  background-color: none;
+/* Mark the steps that are finished and valid: */
+.step.finish {
+  background-color: #04AA6D;
 }
 
 @media (max-width: 1024px) {
@@ -502,23 +483,6 @@ input[type="text"] {
   .criar-e-editar-ficha {
     width: 70%;
     margin-left: 15%;
-  }
-
-  .separacao-fichas {
-    width: 100%;
-    margin-left: 0;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .treinos {
-    width: 100vw;
-    height: 40vh;
-    margin: 15px;
-  }
-
-  .ocultar {
-    flex-wrap: wrap;
   }
 
   .logo img {
@@ -586,30 +550,6 @@ input[type="text"] {
     border-bottom: 1px solid #2b2727;
   }
 
-  .separacao-fichas {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    height: auto;
-  }
-
-  .treinos {
-    width: 90%;
-    height: 100vh;
-    margin-bottom: 25px;
-  }
-
-  .ocultar {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: 0;
-  }
-
-  .ocultar-treinos {
-    margin: 0;
-  }
-
   .topo,
   .botao-ficha,
   .botao-ficha2 {
@@ -650,12 +590,6 @@ input[type="text"] {
   .titulo-carrosel h1,
   .titulo-carrosel h2 {
     margin: 0 5%;
-  }
-
-  .treinos {
-    width: 95%;
-    height: 100vh;
-    padding: 10px;
   }
 
   .topo,
@@ -739,13 +673,6 @@ input[type="text"] {
     height: auto;
   }
 
-  .treinos {
-    width: 90%;
-    height: 100vh;
-    height: auto;
-    margin-bottom: 25px;
-  }
-
   .ocultar {
     flex-direction: column;
     align-items: center;
@@ -805,12 +732,6 @@ input[type="text"] {
     margin: 0 5%;
   }
 
-  .treinos {
-    width: 95%;
-    height: 100vh;
-    padding: 10px;
-  }
-
   .topo,
   .botao-ficha,
   .botao-ficha2 {
@@ -827,10 +748,13 @@ input[type="text"] {
     width: 60vw;
     height: 30vh;
   }
+}
 
-  .nav {
-    padding-top: 85px;
-  }
+.nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 20px;
 }
 
 .nav a {
@@ -839,7 +763,7 @@ input[type="text"] {
   font-size: 22px;
   color: #1565C0;
   font-weight: 600;
-  padding-top: 10px;
+  margin-top: -75px;
 
 }
 

@@ -158,3 +158,55 @@ function openNav() {
 function closeNav() {
   document.getElementById("navSide").style.width = "0";
 }
+
+// === BUSCAR EXERCÍCIOS E POPULAR DROPDOWN === //
+async function carregarExercicios() {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    console.error("Token não encontrado");
+    return;
+  }
+
+  try {
+    const resp = await fetch(`${BASE_URL}/exercicios`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!resp.ok) throw new Error("Erro ao buscar exercícios");
+
+    const data = await resp.json();
+    const lista = data.exercicios;
+
+    const dropdown = document.querySelector(".dropdown-content");
+    dropdown.innerHTML = ""; // limpa antes de inserir
+
+    lista.forEach((item) => {
+      const link = document.createElement("a");
+      link.href = "#";
+      link.textContent = item.nome;
+
+      // Quando clicar, preencher automaticamente
+      link.addEventListener("click", () => {
+        document.querySelector(".dropbtn").textContent = item.nome;
+
+        const inputs = document
+          .getElementsByClassName("tab")[2]
+          .querySelectorAll("input");
+
+        inputs[0].value = item.grupoMuscular;
+        inputs[1].value = item.equipamento;
+      });
+
+      dropdown.appendChild(link);
+    });
+
+  } catch (err) {
+    console.error("Erro ao carregar exercícios:", err);
+  }
+}
+
+// Carrega assim que página abrir
+document.addEventListener("DOMContentLoaded", () => {
+  carregarExercicios();
+});

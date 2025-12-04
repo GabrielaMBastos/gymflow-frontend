@@ -306,119 +306,123 @@ function atualizarGraficoLinha(agrupado) {
 // gráfico horizontal
 async function buscarDadosECriarGraficoHorizontal() {
   mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
-  try {
-    const resp = await fetch(`${API_URL}/series`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!resp.ok) throw new Error();
-    const series = (await resp.json()).series || [];
-    if (!series.length) return mostrarMensagemCanvas("graficoHorizontal");
 
-    const volumeSemanal = {};
-    for (const s of series) {
-      const data = new Date(s.data);
-      if (isNaN(data)) continue;
-      const chave = formatarSemana(data);
-      volumeSemanal[chave] =
-        (volumeSemanal[chave] || 0) +
-        (Number(s.carga) || 0) * (Number(s.repeticoes) || 0);
+  const treinos = await buscarTreinosDoUsuario(userId);
+  if (!treinos.length) return mostrarMensagemCanvas("graficoHorizontal");
+
+  const volumeSemanal = {};
+
+  try {
+    for (const treino of treinos) {
+      const fichas = await buscarFichasDoTreino(treino.id);
+
+      for (const ficha of fichas) {
+        const respEx = await fetch(
+          `${API_URL}/fichas/exercicio?idFicha=${ficha.id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (!respEx.ok) continue;
+        const exercicios = (await respEx.json()).exerciciosDaFicha || [];
+
+        for (const ex of exercicios) {
+          const respSeries = await fetch(
+            `${API_URL}/series?exercicioFichaId=${ex.exercicioFichaId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          if (!respSeries.ok) continue;
+          const series = (await respSeries.json()).series || [];
+
+          for (const s of series) {
+            const data = new Date(s.data);
+            if (isNaN(data)) continue;
+
+            const chaveSemana = formatarSemana(data);
+
+            const volume = (Number(s.carga) || 0) * (Number(s.repeticoes) || 0);
+
+            volumeSemanal[chaveSemana] =
+              (volumeSemanal[chaveSemana] || 0) + volume;
+          }
+        }
+      }
     }
 
     const labels = Object.keys(volumeSemanal).sort();
-    const valores = Object.values(volumeSemanal).map((v) =>
-      Number(v.toFixed(2))
-    );
+    const valores = labels.map((k) => Number(volumeSemanal[k].toFixed(2)));
+
+    if (!labels.length) return mostrarMensagemCanvas("graficoHorizontal");
+
     criarGraficoHorizontal(labels, valores);
   } catch {
     mostrarMensagemCanvas("graficoHorizontal");
   }
 }
 
-function criarGraficoHorizontal(labels, valores) {
-  const canvas = document.getElementById("graficoHorizontal");
-  if (!canvas) return mostrarMensagemCanvas("graficoHorizontal");
-  const ctx = canvas.getContext("2d");
-  const gradient = ctx.createLinearGradient(0, 0, 600, 0);
-  gradient.addColorStop(0, "#1565C0");
-  gradient.addColorStop(1, "#43A047");
-
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Volume total por semana (kg × repetições)",
-          data: valores,
-          backgroundColor: gradient,
-          borderRadius: 15,
-          borderSkipped: false,
-        },
-      ],
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true }, y: {} },
-    },
-  });
-}
-
-function formatarSemana(data) {
-  const inicio = new Date(data);
-  const diaSemana = inicio.getDay();
-  const diferenca = diaSemana === 0 ? 6 : diaSemana - 1;
-  inicio.setDate(inicio.getDate() - diferenca);
-  const fim = new Date(inicio);
-  fim.setDate(inicio.getDate() + 6);
-  const f = (d) =>
-    `${String(d.getDate()).padStart(2, "0")}/${String(
-      d.getMonth() + 1
-    ).padStart(2, "0")}`;
-  return `Semana ${f(inicio)} - ${f(fim)}`;
-}
-
 // gráfico radar
 async function buscarDadosECriarGraficoRadar() {
   mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
+
+  const treinos = await buscarTreinosDoUsuario(userId);
+  if (!treinos.length) return mostrarMensagemCanvas("graficoRadar");
+
+  const avaliacoes = [];
+  const gruposMusculares = new Set();
+
   try {
-    const resp = await fetch(`${API_URL}/fichas`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!resp.ok) throw new Error();
-    const fichas = (await resp.json()).fichas || [];
-    if (!fichas.length) return mostrarMensagemCanvas("graficoRadar");
+    for (const treino of treinos) {
+      const fichas = await buscarFichasDoTreino(treino.id);
 
-    const avaliacoes = [];
-    const gruposMusculares = new Set();
-
-    for (const ficha of fichas) {
-      try {
+      for (const ficha of fichas) {
         const respEx = await fetch(
           `${API_URL}/fichas/exercicio?idFicha=${ficha.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
+
         if (!respEx.ok) continue;
         const exercicios = (await respEx.json()).exerciciosDaFicha || [];
+
         const somaPorGrupo = {};
-        exercicios.forEach((ex) => {
+        const qtdPorGrupo = {};
+
+        for (const ex of exercicios) {
           const grupo = ex.grupoMuscular?.toUpperCase() || "OUTROS";
           gruposMusculares.add(grupo);
-          somaPorGrupo[grupo] =
-            (somaPorGrupo[grupo] || 0) + (ex.cargaMedia ?? 50);
-        });
+
+          const respSeries = await fetch(
+            `${API_URL}/series?exercicioFichaId=${ex.exercicioFichaId}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          if (!respSeries.ok) continue;
+          const series = (await respSeries.json()).series || [];
+
+          for (const s of series) {
+            const carga = Number(s.carga) || 0;
+
+            somaPorGrupo[grupo] = (somaPorGrupo[grupo] || 0) + carga;
+            qtdPorGrupo[grupo] = (qtdPorGrupo[grupo] || 0) + 1;
+          }
+        }
+
+        const medias = {};
+        for (const g of Object.keys(somaPorGrupo)) {
+          medias[g] = somaPorGrupo[g] / (qtdPorGrupo[g] || 1);
+        }
+
         avaliacoes.push({
           nome: ficha.nomeFicha || `Ficha ${ficha.id}`,
-          grupos: somaPorGrupo,
+          grupos: medias,
         });
-      } catch {}
+      }
     }
 
     if (!avaliacoes.length) return mostrarMensagemCanvas("graficoRadar");
 
     const labels = Array.from(gruposMusculares);
     const cores = gerarCores(avaliacoes.length);
+
     const datasets = avaliacoes.map((av, i) => ({
       label: av.nome,
       data: labels.map((g) => av.grupos[g] || 0),
@@ -433,38 +437,6 @@ async function buscarDadosECriarGraficoRadar() {
   } catch {
     mostrarMensagemCanvas("graficoRadar");
   }
-}
-
-function criarGraficoRadar(labels, datasets) {
-  const ctx = document.getElementById("graficoRadar")?.getContext("2d");
-  if (!ctx) return;
-  if (chartRadarInstance) chartRadarInstance.destroy();
-  chartRadarInstance = new Chart(ctx, {
-    type: "radar",
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      elements: { line: { borderWidth: 3 } },
-      scales: {
-        r: {
-          angleLines: { color: "#ccc" },
-          grid: { color: "#ddd" },
-          pointLabels: {
-            font: { size: 14, family: "Montserrat" },
-            color: "#333",
-          },
-          suggestedMin: 0,
-          suggestedMax: 100,
-        },
-      },
-      plugins: {
-        legend: {
-          position: "top",
-          labels: { font: { size: 14, family: "Montserrat" }, color: "#333" },
-        },
-      },
-    },
-  });
 }
 
 buscarDadosECriarGraficoPizza();

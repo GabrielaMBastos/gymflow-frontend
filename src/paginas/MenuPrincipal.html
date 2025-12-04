@@ -6,6 +6,8 @@
     <title>Menu principal</title>
     <link rel="stylesheet" type="text/css" href="../css/menu.css">
     <script src="../js/menu.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 </head>
 
 <body>
@@ -15,7 +17,7 @@
             <img class="logo-text" src="../assets/gymflow-logo-texto.PNG" />
         </div>
         <nav class="nav">
-            <a href="#">Início</a>
+            <a href="../paginas/MenuPrincipal.html">Início</a>
             <a href="../paginas/estatisticas.html">Estatísticas</a>
             <a href="../paginas/pagina-user.html">Meu perfil</a>
         </nav>
@@ -23,9 +25,9 @@
         <!-- Nav lateral-->
         <nav id="navSide" class="nav-side">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="#">Início</a>
+            <a href="../paginas/MenuPrincipal.html">Início</a>
             <a href="../paginas/estatisticas.html">Estatísticas</a>
-            <a href="../paginas/user-page.html">Meu perfil</a>
+            <a href="../paginas/pagina-user.html">Meu perfil</a>
         </nav>
         <span class="nav-side-icon" onclick="openNav()"><i class="fa-solid fa-bars"></i></span>
     </header>
@@ -82,48 +84,66 @@
         <h4>da forma que quiser</h4>
     </div>
 
-    <div class="cadastro-de-treinos">
+<div class="cadastro-de-treinos">
+    <form id="regForm" action="">
+      <!-- Step 1: Treino -->
+      <div class="tab">
+        <h4>Cadastrar Treino</h4>
+        <p><input id="treinoNome" placeholder="Nome do treino..." /></p>
+        <p><input id="dataInicio" type="date" /></p>
+        <p><input id="dataFim" type="date" /></p>
+      </div>
 
-        <form id="formFicha" action="">
-            <h1>Cadastro de Ficha</h1>
+      <!-- Step 2: Ficha -->
+      <div class="tab">
+        <h4>Cadastrar Ficha</h4>
+        <p>
+          <select id="diaSemana" class="caixa-opcoes">
+            <option value="SEGUNDA">Segunda</option>
+            <option value="TERCA">Terça</option>
+            <option value="QUARTA">Quarta</option>
+            <option value="QUINTA">Quinta</option>
+            <option value="SEXTA">Sexta</option>
+            <option value="SABADO">Sábado</option>
+            <option value="DOMINGO">Domingo</option>
+          </select>
+        </p>
+      </div>
 
-            <div class="tab">
-                <h4>Treino:</h4>
-                <p><input placeholder="Nome do treino..." oninput="this.className = ''"></p>
-                <p><input placeholder="Data de início..." oninput="this.className = ''"></p>
-                <p><input placeholder="Data de Finalização..." oninput="this.className = ''"></p>
-            </div>
+      <!-- Step 3: Escolher exercício + Cadastrar na ficha -->
+      <div class="tab">
+        <h4>Adicionar Exercício à Ficha</h4>
+        <p>
+          <select id="exercicioSelect" class="caixa-opcoes">
+            <option value="">--  Escolha um exercício  --</option>
+          </select>
+          <p><input id="grupoMuscular" type="text" placeholder="Grupo Muscular" class="grupoEquipamento"/></p>
+          <p><input id="equipamento" type="text" placeholder="Equipamento"class="grupoEquipamento" /></p>
+        </p>
+        <hr>
+        <p><input id="carga" type="number" placeholder="Carga" /></p>
+        <p><input id="series" type="number" placeholder="Séries" /></p>
+        <p>
+          <input id="minRep" type="number" placeholder="Mínimo de repetições" />
+        </p>
+        <p>
+          <input id="maxRep" type="number" placeholder="Máximo de repetições" />
+        </p>
+        <p><input id="descanso" type="number" placeholder="Descanso (s)" /></p>
+        <p><input id="observacao" placeholder="Observação" /></p>
+      </div>
 
-            <div class="tab">
-                <h4>Ficha:</h4>
-                <p><input placeholder="Dia da semana..." oninput="this.className = ''"></p>
-            </div>
+      <div style="overflow: auto">
+        <div style="float: right">
+          <button type="button" id="prevBtn" class="botao-ficha" onclick="nextPrev(-1)"> Voltar </button>
+          <button type="button" id="nextBtn" class="botao-ficha" onclick="nextPrev(1)"> Próximo </button>
+        </div>
+      </div>
 
-            <div class="tab">
-                <h4>Exercício:</h4>
-                <div class="dropdown">
-                    <button class="dropbtn">Exercícios</button>
-                    <div class="dropdown-content">
-                    </div>
-                </div>
-                <p><input placeholder="Grupo muscular..." oninput="this.className = ''"></p>
-                <p><input placeholder="Equipamento..." oninput="this.className = ''"></p>
-            </div>
-
-            <div style="overflow:auto;">
-                <div style="float:right;">
-                    <button class="botao-ficha" type="button" id="prevBtn" onclick="nextPrev(-1)">Anterior</button>
-                    <button class="botao-ficha" type="button" id="nextBtn" onclick="nextPrev(1)">Próximo</button>
-                </div>
-            </div>
-
-            <div style="text-align:center;margin-top:40px;">
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-            </div>
-        </form>
-
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+      </div>
+    </form>
     </div>
 </body>

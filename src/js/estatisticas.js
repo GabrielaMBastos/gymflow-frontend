@@ -304,7 +304,6 @@ function atualizarGraficoLinha(agrupado) {
 }
 
 // gráfico horizontal
-
 async function buscarDadosECriarGraficoHorizontal() {
   mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
 
@@ -362,7 +361,6 @@ async function buscarDadosECriarGraficoHorizontal() {
 }
 
 // gráfico radar
-
 async function buscarDadosECriarGraficoRadar() {
   mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
 

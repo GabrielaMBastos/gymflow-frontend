@@ -55,6 +55,35 @@ h4 {
   overflow: auto;
 }
 
+.nav {
+  position: absolute; 
+  top: 0;
+  right: 0;
+  width: auto;
+  padding: 1em;
+  display: flex;
+  justify-content: flex-end; 
+  align-items: center;
+  gap: 1em; 
+}
+
+.nav a {
+  text-decoration: none;
+  padding-right: 1em;
+  font-size: 22px;
+  color: #1565C0;
+  font-weight: 600;
+}
+
+.nav a:hover {
+  color: #3b3b3b;
+}
+
+.nav-side,
+.nav-side-icon {
+  display: none;
+}
+
 .cadastro-de-treinos {
   margin-left: 20%;
   text-align: center;
@@ -62,6 +91,7 @@ h4 {
   align-items: center;
   text-align: center;
   width: 60%;
+  height: 27vw;
 
 }
 .titulo-carrosel {
@@ -70,6 +100,27 @@ h4 {
   align-items: left;
   text-align: center;
   margin: 0 20% 4% 5px;
+}
+
+.step {
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbbbbb;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+}
+
+/* Mark the active step: */
+.step.active {
+  opacity: 1;
+}
+
+/* Mark the steps that are finished and valid: */
+.step.finish {
+  background-color: #04AA6D;
 }
 
 .quadro-de-imagens {
@@ -184,7 +235,7 @@ h4 {
   border-bottom: 2px solid #2b2727;
   width: 50%;
   margin-left: 25%;
-  margin-bottom: 5%;
+  margin-bottom: 2%;
 }
 
 
@@ -270,6 +321,7 @@ h4 {
   color: aliceblue;
   height: 35px;
   cursor: pointer;
+  width: 60px;
 }
 
 .topo1 {
@@ -299,28 +351,46 @@ button:hover {
 }
 
 .dropbtn {
-  background-color: #4CAF50;
-  color: white;
+
   padding: 16px;
   font-size: 16px;
-  border: none;
-  cursor: pointer;
   border-radius: 15px;
-  margin-left: 5vw;
-}
-
-.dropdown {
-  position: absolute;
-
+  margin-left: 3vw;
+  max-width:150px;
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
-  min-width: 200px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  margin-left: 3vw;
+  min-width: 300px;
+  max-height: 250px;
+  left: 0;
+  border: 1px solid #ccc;
+  overflow: auto;
+  margin-left: 43%;
+}
+
+.caixa-opcoes {
+  margin: 5px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid #ccc;
+  height: 35px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  width: 500px;
+  height: 45px;  
+  text-align: center;
+  justify-content: center;
+}
+
+.grupoEquipamento {
+  margin: 5px;
+  border-radius: 25px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 16px;
+  color: #5a5858;
 }
 
 .dropdown-content a {
@@ -339,7 +409,27 @@ button:hover {
 }
 
 .dropdown:hover .dropbtn {
-  background-color: #3e8e41;
+  background-color: none;
+}
+
+.dropdown-list {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    width: 90%;
+    max-height: 150px;
+    overflow-y: auto;
+    display: none;
+    z-index: 9999;
+}
+
+.dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: #f0f0f0;
 }
 
 .modal {
@@ -426,30 +516,10 @@ input.invalid {
   align-items: center;
   text-align: center;
   display: none;
-  height: 240px;  
+  margin-bottom: 4vw;
+  margin-top: -20%;
 }
 
-/* Make circles that indicate the steps of the form: */
-.step {
-  height: 15px;
-  width: 15px;
-  margin: 0 2px;
-  background-color: #bbbbbb;
-  border: none;
-  border-radius: 50%;
-  display: inline-block;
-  opacity: 0.5;
-}
-
-/* Mark the active step: */
-.step.active {
-  opacity: 1;
-}
-
-/* Mark the steps that are finished and valid: */
-.step.finish {
-  background-color: #04AA6D;
-}
 
 @media (max-width: 1024px) {
 
@@ -748,13 +818,17 @@ input.invalid {
     width: 60vw;
     height: 30vh;
   }
-}
 
 .nav {
+margin-top: 5em;
+  top: 0;
+  right: 0;
+  width: auto;
+  padding: 1em;
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-end; 
   align-items: center;
-  padding-right: 20px;
+  gap: 1em; 
 }
 
 .nav a {
@@ -763,8 +837,6 @@ input.invalid {
   font-size: 22px;
   color: #1565C0;
   font-weight: 600;
-  margin-top: -75px;
-
 }
 
 .nav a:hover {
@@ -774,6 +846,8 @@ input.invalid {
 .nav-side,
 .nav-side-icon {
   display: none;
+}
+
 }
 
 .logo-container {
@@ -789,3 +863,8 @@ input.invalid {
   width: 200px;
   padding-top: 1em;
 }
+
+
+
+
+

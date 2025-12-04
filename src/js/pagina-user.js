@@ -144,6 +144,25 @@ function desabilitarCampos() {
 
 async function salvar() {
   try {
+
+    const nome = document.getElementById("name").value.trim();
+    if (!nome) {
+      abrirPopupErro("Insira um nome");
+      return;
+    }
+
+    const peso = parseFloat(document.getElementById("pesoValor")?.value || 0);
+    if (isNaN(peso) || peso <= 0) {
+      abrirPopupErro("Insira um peso válido");
+      return;
+    }
+
+    const altura = parseFloat(document.getElementById("alturaValor")?.value || 0);
+    if (isNaN(altura) || altura <= 0) {
+      abrirPopupErro("Insira uma altura válida");
+      return;
+    }
+
     const userId = getUserIdFromToken();
 
     const dataNascimentoInput = document.getElementById("dataNascimento");
@@ -313,6 +332,9 @@ async function carregarMetas() {
 
 function renderizarMetas(metas) {
   listaMetas.innerHTML = "";
+
+  metas.sort((a, b) => a.id - b.id);
+
 
   const unidadesSimbolo = {
     GRAMAS: "g",

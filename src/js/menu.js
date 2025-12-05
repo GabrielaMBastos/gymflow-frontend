@@ -2,8 +2,34 @@ var currentTab = 0;
 let treinoId = null;
 let fichaId = null;
 let exerciciosCache = [];
-const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJneW1mbG93LWF1dGgtYXBpIiwic3ViIjoiYmVlZkBlbWFpbC5jb20iLCJpZFVzZXIiOjEsInJvbGUiOiJBRE1JTiIsImV4cCI6MTc2NDkwMTQwNX0.UPbxK0em22EDsGbAFUJ46UWet2Bjbsm7d99rBD1XO0M";
+
+//Encontra token e pega ID
+function verificarAutenticacao() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "../index.html";
+    throw new Error("Usuário não autenticado");
+  }
+  return token;
+}
+
+const token = verificarAutenticacao();
+
+function getUserIdFromToken() {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.idUsuario || payload.idUser || payload.id;
+  } catch {
+    return null;
+  }
+}
+
+const userId = getUserIdFromToken();
+if (!userId) {
+  localStorage.removeItem("token");
+  window.location.href = "../index.html";
+}
+
 showTab(currentTab);
 
 function showTab(n) {
@@ -16,7 +42,6 @@ function showTab(n) {
 
   fixStepIndicator(n);
 
-  // Ao entrar no step 3 (index 2), carrega os exercícios disponíveis
   if (n === 2) {
     loadExercicios();
   }
@@ -35,7 +60,6 @@ async function nextPrev(n) {
 
   if (currentTab >= x.length) {
     alert("Fluxo concluído!");
-    // opcional: resetar form ou redirecionar
     return false;
   }
 
@@ -43,15 +67,9 @@ async function nextPrev(n) {
 }
 
 async function handleStepAction(step) {
-  if (step === 0) {
-    return await cadastrarTreino();
-  }
-  if (step === 1) {
-    return await cadastrarFicha();
-  }
-  if (step === 2) {
-    return await cadastrarExercicioNaFicha();
-  }
+  if (step === 0) return await cadastrarTreino();
+  if (step === 1) return await cadastrarFicha();
+  if (step === 2) return await cadastrarExercicioNaFicha();
   return true;
 }
 
@@ -60,9 +78,7 @@ async function cadastrarTreino() {
   const dataInicio = document.getElementById("dataInicio").value;
   const dataFim = document.getElementById("dataFim").value;
 
-  // TODO: aqui esta setado o usuario 1 mas no codigo deve
-  // desencriptar o token para pegar o id do usuario que esta logado
-  const body = { usuarioId: 1, nome, dataInicio, dataFim };
+  const body = {usuarioId: userId, nome, dataInicio, dataFim };
 
   const res = await fetch(
     "https://gymflow-backend.up.railway.app/api/treinos",
@@ -114,22 +130,22 @@ async function loadExercicios() {
   const res = await fetch(
     "https://gymflow-backend.up.railway.app/api/exercicios",
     {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` }
     }
   );
+
   if (!res.ok) {
     alert("Erro ao carregar exercícios");
     return;
   }
-  const data = await res.json();
 
+  const data = await res.json();
   exerciciosCache = data.exercicios;
 
   const select = document.getElementById("exercicioSelect");
   select.innerHTML = '<option value="">-- Escolha um exercício --</option>';
-  data.exercicios.forEach((ex) => {
+
+  exerciciosCache.forEach((ex) => {
     const opt = document.createElement("option");
     opt.value = ex.id;
     opt.textContent = `${ex.nome} (${ex.grupoMuscular})`;
@@ -137,50 +153,35 @@ async function loadExercicios() {
   });
 }
 
-// CODIGO PARA LISTAR CARACTERISTICAS DO EXERCICIO
 document
   .getElementById("exercicioSelect")
   .addEventListener("change", function () {
     const idSelecionado = Number(this.value);
-
     const exercicio = exerciciosCache.find((e) => e.id === idSelecionado);
 
-    if (exercicio) {
-      document.getElementById("grupoMuscular").value =
-        exercicio.grupoMuscular || "";
-      document.getElementById("equipamento").value =
-        exercicio.equipamento || "";
-    } else {
-      document.getElementById("grupoMuscular").value = "";
-      document.getElementById("equipamento").value = "";
-    }
+    document.getElementById("grupoMuscular").value =
+      exercicio?.grupoMuscular || "";
+    document.getElementById("equipamento").value =
+      exercicio?.equipamento || "";
   });
 
 async function cadastrarExercicioNaFicha() {
   const exercicioId = document.getElementById("exercicioSelect").value;
+
   if (!exercicioId) {
     alert("Selecione um exercício");
     return false;
   }
 
-  const carga = parseFloat(document.getElementById("carga").value);
-  const quantidadeDeSeries = parseInt(document.getElementById("series").value);
-  const minimoRepeticoes = parseInt(document.getElementById("minRep").value);
-  const maximoRepeticoes = parseInt(document.getElementById("maxRep").value);
-  const descansoEmSegundos = parseInt(
-    document.getElementById("descanso").value
-  );
-  const observacao = document.getElementById("observacao").value;
-
   const body = {
     fichaId,
     exercicioId: parseInt(exercicioId),
-    carga,
-    quantidadeDeSeries,
-    minimoRepeticoes,
-    maximoRepeticoes,
-    descansoEmSegundos,
-    observacao,
+    carga: parseFloat(document.getElementById("carga").value),
+    quantidadeDeSeries: parseInt(document.getElementById("series").value),
+    minimoRepeticoes: parseInt(document.getElementById("minRep").value),
+    maximoRepeticoes: parseInt(document.getElementById("maxRep").value),
+    descansoEmSegundos: parseInt(document.getElementById("descanso").value),
+    observacao: document.getElementById("observacao").value,
   };
 
   const res = await fetch(
@@ -205,9 +206,8 @@ async function cadastrarExercicioNaFicha() {
 }
 
 function fixStepIndicator(n) {
-  var i,
-    x = document.getElementsByClassName("step");
-  for (i = 0; i < x.length; i++) {
+  var x = document.getElementsByClassName("step");
+  for (let i = 0; i < x.length; i++) {
     x[i].className = x[i].className.replace(" active", "");
   }
   x[n].className += " active";

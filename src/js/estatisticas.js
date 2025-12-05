@@ -73,6 +73,18 @@ function mostrarMensagemCanvas(id, mensagem = "Sem dados para ser exibido") {
   ctx.fillText(mensagem, canvas.width / 2, canvas.height / 2);
 }
 
+// Função para formatar a semana
+
+function formatarSemana(date) {
+  const ano = date.getFullYear();
+  const oneJan = new Date(ano, 0, 1);
+  const numberOfDays = Math.floor((date - oneJan) / (24 * 60 * 60 * 1000));
+  const semana = Math.ceil((numberOfDays + oneJan.getDay() + 1) / 7);
+
+  return `${ano}-W${String(semana).padStart(2, "0")}`;
+}
+
+
 // funções para buscar dados no back
 async function buscarTreinosDoUsuario(userId) {
   try {
@@ -304,6 +316,7 @@ function atualizarGraficoLinha(agrupado) {
 }
 
 // gráfico horizontal
+
 async function buscarDadosECriarGraficoHorizontal() {
   mostrarMensagemCanvas("graficoHorizontal", "Carregando dados...");
 
@@ -359,8 +372,75 @@ async function buscarDadosECriarGraficoHorizontal() {
     mostrarMensagemCanvas("graficoHorizontal");
   }
 }
+function criarGraficoHorizontal(labels, valores) {
+  const ctx = document.getElementById("graficoHorizontal").getContext("2d");
+  if (chartHorizontalInstance) chartHorizontalInstance.destroy();
 
+  chartHorizontalInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Volume semanal (kg)",
+          data: valores,
+          backgroundColor: gerarCores(labels.length),
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          beginAtZero: true,
+          title: { display: true, text: "Volume (kg)" },
+        },
+        y: {
+          title: { display: true, text: "Semana" },
+        },
+      },
+      plugins: {
+        legend: { display: false },
+      },
+    },
+  });
+}
 // gráfico radar
+
+// Converte hex → rgba com transparência
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.substring(1, 3), 16);
+  const g = parseInt(hex.substring(3, 5), 16);
+  const b = parseInt(hex.substring(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function criarGraficoRadar(labels, datasets) {
+  const ctx = document.getElementById("graficoRadar").getContext("2d");
+  if (chartRadarInstance) chartRadarInstance.destroy();
+
+  chartRadarInstance = new Chart(ctx, {
+    type: "radar",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          beginAtZero: true,
+          ticks: { display: false },
+        },
+      },
+      plugins: {
+        legend: { position: "top" },
+      },
+    },
+  });
+}
+
 async function buscarDadosECriarGraficoRadar() {
   mostrarMensagemCanvas("graficoRadar", "Carregando dados...");
 
@@ -421,13 +501,15 @@ async function buscarDadosECriarGraficoRadar() {
     if (!avaliacoes.length) return mostrarMensagemCanvas("graficoRadar");
 
     const labels = Array.from(gruposMusculares);
+
+    //pega cores
     const cores = gerarCores(avaliacoes.length);
 
     const datasets = avaliacoes.map((av, i) => ({
       label: av.nome,
       data: labels.map((g) => av.grupos[g] || 0),
       fill: true,
-      backgroundColor: `${cores[i]}40`,
+      backgroundColor: hexToRgba(cores[i], 0.25),
       borderColor: cores[i],
       pointBackgroundColor: cores[i],
       borderWidth: 2,
@@ -438,6 +520,7 @@ async function buscarDadosECriarGraficoRadar() {
     mostrarMensagemCanvas("graficoRadar");
   }
 }
+
 
 buscarDadosECriarGraficoPizza();
 buscarDadosECriarGraficoLinha();

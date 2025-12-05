@@ -82,8 +82,12 @@ h4 {
 .nav-side,
 .nav-side-icon {
   display: none;
+  
 }
 
+.texto {
+  font-family: "Montserrat", sans-serif;
+}
 .cadastro-de-treinos {
   margin-left: 20%;
   text-align: center;
